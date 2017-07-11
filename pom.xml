@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>OpenAPI Annotation Processor</name>
-    <description>A java annotation processor performing various operations related to OpenAPI initiative</description>
+    <description>A java annotation processor performing various operations related to the OpenAPI initiative</description>
     <url>https://github.com/Cosium/openapi-annotation-processor</url>
 
     <groupId>com.cosium.openapi</groupId>
