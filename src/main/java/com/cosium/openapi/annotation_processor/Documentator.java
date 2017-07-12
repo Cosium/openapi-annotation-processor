@@ -1,6 +1,6 @@
 package com.cosium.openapi.annotation_processor;
 
-import com.cosium.openapi.annotation_processor.specification.Specification_;
+import com.cosium.openapi.annotation_processor.model.ParsedPath;
 
 import java.util.List;
 
@@ -15,6 +15,6 @@ public interface Documentator {
      * Generate documentation for the given specifications
      * @param specifications The specifications to generate documentation for
      */
-    void document(List<Specification_> specifications);
+    void document(List<ParsedPath> specifications);
 
 }

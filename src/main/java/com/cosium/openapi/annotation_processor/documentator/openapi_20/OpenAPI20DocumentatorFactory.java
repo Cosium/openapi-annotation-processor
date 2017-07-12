@@ -10,7 +10,7 @@ import javax.annotation.processing.Filer;
  *
  * @author Reda.Housni-Alaoui
  */
-public class OpenAPI20GeneratorFactory implements DocumentatorFactory {
+public class OpenAPI20DocumentatorFactory implements DocumentatorFactory {
     @Override
     public Documentator build(Filer filer) {
         return null;

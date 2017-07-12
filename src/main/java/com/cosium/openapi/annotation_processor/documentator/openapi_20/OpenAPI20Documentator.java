@@ -1,7 +1,7 @@
 package com.cosium.openapi.annotation_processor.documentator.openapi_20;
 
 import com.cosium.openapi.annotation_processor.Documentator;
-import com.cosium.openapi.annotation_processor.specification.Specification_;
+import com.cosium.openapi.annotation_processor.model.ParsedPath;
 
 import java.util.List;
 
@@ -10,10 +10,10 @@ import java.util.List;
  *
  * @author Reda.Housni-Alaoui
  */
-class OpenAPI20Generator implements Documentator {
+class OpenAPI20Documentator implements Documentator {
 
     @Override
-    public void document(List<Specification_> specifications) {
+    public void document(List<ParsedPath> specifications) {
 
     }
 }

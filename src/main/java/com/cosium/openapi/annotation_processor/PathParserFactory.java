@@ -4,13 +4,13 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 /**
- * Builds a parser against a supported annotation
+ * Builds a path parser against a supported annotation
  *
  * Created on 12/07/17.
  *
  * @author Reda.Housni-Alaoui
  */
-public interface ParserFactory {
+public interface PathParserFactory {
 
     /**
      * @return The supported annotation qualified name
@@ -20,6 +20,6 @@ public interface ParserFactory {
     /**
      * @return A new parser
      */
-    Parser build(Types typeUtils, Elements elementUtils);
+    PathParser build(Types typeUtils, Elements elementUtils);
 
 }

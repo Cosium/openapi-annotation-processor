@@ -1,8 +1,8 @@
 package com.cosium.openapi.annotation_processor;
 
-import com.cosium.openapi.annotation_processor.documentator.openapi_20.OpenAPI20GeneratorFactory;
+import com.cosium.openapi.annotation_processor.documentator.openapi_20.OpenAPI20DocumentatorFactory;
+import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import com.cosium.openapi.annotation_processor.parser.spring.SpringParserFactory;
-import com.cosium.openapi.annotation_processor.specification.Specification_;
 import com.google.auto.service.AutoService;
 
 import javax.annotation.processing.*;
@@ -11,6 +11,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -26,7 +27,7 @@ import static java.util.Objects.requireNonNull;
 @AutoService(Processor.class)
 public class OpenAPIProcessor extends AbstractProcessor {
 
-    private final List<ParserFactory> parserFactories = new ArrayList<>();
+    private final List<PathParserFactory> parserFactories = new ArrayList<>();
     private final List<DocumentatorFactory> documentatorFactories = new ArrayList<>();
 
     private Types typeUtils;
@@ -36,14 +37,14 @@ public class OpenAPIProcessor extends AbstractProcessor {
 
     public OpenAPIProcessor() {
         parserFactories.add(new SpringParserFactory());
-        documentatorFactories.add(new OpenAPI20GeneratorFactory());
+        documentatorFactories.add(new OpenAPI20DocumentatorFactory());
     }
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         return parserFactories
                 .stream()
-                .map(ParserFactory::getSupportedAnnotation)
+                .map(PathParserFactory::getSupportedAnnotation)
                 .collect(Collectors.toSet());
     }
 
@@ -60,40 +61,41 @@ public class OpenAPIProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         AtomicReference<Element> currentAnnotatedElement = new AtomicReference<>();
 
-        List<Specification_> specifications = parserFactories
+        List<ParsedPath> parsedPaths = parserFactories
                 .stream()
                 .map(ParserHolder::new)
                 .flatMap(parserHolder -> {
                     TypeElement annotation = elementUtils.getTypeElement(parserHolder.getSupportedAnnotation());
-                    Parser parser = parserHolder.getParser();
+                    PathParser pathParser = parserHolder.getPathParser();
                     return roundEnv
                             .getElementsAnnotatedWith(annotation)
                             .stream()
                             .peek(currentAnnotatedElement::set)
-                            .map(parser::parse);
+                            .map(pathParser::parse)
+                            .flatMap(Collection::stream);
                 })
                 .collect(Collectors.toList());
 
         documentatorFactories
                 .stream()
                 .map(documentatorFactory -> documentatorFactory.build(filer))
-                .forEach(documentator -> documentator.document(specifications));
+                .forEach(documentator -> documentator.document(parsedPaths));
 
         return true;
     }
 
     private class ParserHolder {
         private final String supportedAnnotation;
-        private final Parser parser;
+        private final PathParser pathParser;
 
-        private ParserHolder(ParserFactory parserFactory) {
-            requireNonNull(parserFactory);
-            this.supportedAnnotation = parserFactory.getSupportedAnnotation();
-            this.parser = parserFactory.build(typeUtils, elementUtils);
+        private ParserHolder(PathParserFactory pathParserFactory) {
+            requireNonNull(pathParserFactory);
+            this.supportedAnnotation = pathParserFactory.getSupportedAnnotation();
+            this.pathParser = pathParserFactory.build(typeUtils, elementUtils);
         }
 
-        private Parser getParser() {
-            return parser;
+        private PathParser getPathParser() {
+            return pathParser;
         }
 
         private String getSupportedAnnotation() {
