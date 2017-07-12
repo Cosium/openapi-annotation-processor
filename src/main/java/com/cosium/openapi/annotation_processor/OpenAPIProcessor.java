@@ -35,6 +35,8 @@ public class OpenAPIProcessor extends AbstractProcessor {
     private static final String PRODUCES_OPTION = "produces";
     private static final String CONSUMES_OPTION = "consumes";
 
+    private static final String APPLICATION_JSON = "application/json";
+
     private final List<PathParserFactory> parserFactories = new ArrayList<>();
     private final List<DocumentatorFactory> documentatorFactories = new ArrayList<>();
 
@@ -77,9 +79,9 @@ public class OpenAPIProcessor extends AbstractProcessor {
                 .builder()
                 .basePath(options.getOrDefault(BASE_PATH_OPTION, "/"));
 
-        Stream.of(StringUtils.split(options.get(CONSUMES_OPTION), ","))
+        Stream.of(StringUtils.split(StringUtils.defaultIfBlank(options.get(CONSUMES_OPTION), APPLICATION_JSON), ","))
                 .forEach(documentatorOptionsBuilder::addConsumes);
-        Stream.of(StringUtils.split(options.get(PRODUCES_OPTION), ","))
+        Stream.of(StringUtils.split(StringUtils.defaultIfBlank(options.get(PRODUCES_OPTION), APPLICATION_JSON), ","))
                 .forEach(documentatorOptionsBuilder::addProduces);
 
         this.documentatorOptions = documentatorOptionsBuilder.build();

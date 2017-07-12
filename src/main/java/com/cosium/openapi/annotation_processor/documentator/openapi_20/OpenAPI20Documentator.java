@@ -28,6 +28,7 @@ class OpenAPI20Documentator implements Documentator {
         Swagger swagger = new Swagger();
         swagger.basePath(options.basePath());
         swagger.produces(options.produces());
+        parsedPaths.forEach(parsedPath -> swagger.path(parsedPath.getPathTemplate(), parsedPath.getPath()));
 
     }
 }
