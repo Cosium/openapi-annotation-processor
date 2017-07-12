@@ -1,5 +1,8 @@
 package com.cosium.openapi.annotation_processor;
 
+import com.cosium.openapi.annotation_processor.codegen.CodeGenerator;
+import com.cosium.openapi.annotation_processor.codegen.CodeGeneratorOptions;
+import com.cosium.openapi.annotation_processor.codegen.DefaultCodeGenerator;
 import com.cosium.openapi.annotation_processor.documentator.DefaultSpecificationGenerator;
 import com.cosium.openapi.annotation_processor.documentator.SpecificationGenerator;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
@@ -42,6 +45,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
     private Messager messager;
 
     private SpecificationGenerator specificationGenerator;
+    private CodeGenerator codeGenerator;
 
     public OpenAPIProcessor() {
         parserFactories.add(new SpringParserFactory());
@@ -70,6 +74,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
 
         IOptions options = optionsBuilder.build(processingEnv.getOptions());
         this.specificationGenerator = new DefaultSpecificationGenerator(options.specificationGenerator());
+        this.codeGenerator = new DefaultCodeGenerator(options.codeGenerator());
     }
 
     @Override
@@ -96,7 +101,6 @@ public class OpenAPIProcessor extends AbstractProcessor {
                 .collect(Collectors.toList());
 
         Swagger swagger = specificationGenerator.generate(parsedPaths);
-
 
     }
 

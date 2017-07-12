@@ -7,5 +7,4 @@ package com.cosium.openapi.annotation_processor.codegen;
  */
 public interface CodeGenerator {
 
-
 }

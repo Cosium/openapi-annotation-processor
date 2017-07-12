@@ -12,10 +12,19 @@ import java.util.List;
 @Value.Immutable
 public interface ISpecificationGeneratorOptions {
 
+    /**
+     * @return The specification base path
+     */
     String basePath();
 
+    /**
+     * @return The produced global mime types
+     */
     List<String> produces();
 
+    /**
+     * @return The consumes global mime types
+     */
     List<String> consumes();
 
 }
