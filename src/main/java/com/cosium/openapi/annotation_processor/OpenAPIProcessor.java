@@ -1,7 +1,6 @@
 package com.cosium.openapi.annotation_processor;
 
 import com.cosium.openapi.annotation_processor.codegen.CodeGenerator;
-import com.cosium.openapi.annotation_processor.codegen.CodeGeneratorOptions;
 import com.cosium.openapi.annotation_processor.codegen.DefaultCodeGenerator;
 import com.cosium.openapi.annotation_processor.documentator.DefaultSpecificationGenerator;
 import com.cosium.openapi.annotation_processor.documentator.SpecificationGenerator;
@@ -19,6 +18,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -80,7 +80,12 @@ public class OpenAPIProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         AtomicReference<Element> currentAnnotatedElement = new AtomicReference<>();
-        doProcess(roundEnv, currentAnnotatedElement);
+        try {
+            doProcess(roundEnv, currentAnnotatedElement);
+        } catch (Exception e) {
+            messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage(), currentAnnotatedElement.get());
+            e.printStackTrace();
+        }
         return true;
     }
 
@@ -100,8 +105,9 @@ public class OpenAPIProcessor extends AbstractProcessor {
                 })
                 .collect(Collectors.toList());
 
-        Swagger swagger = specificationGenerator.generate(parsedPaths);
+        currentAnnotatedElement.set(null);
 
+        codeGenerator.generate(specificationGenerator.generate(parsedPaths));
     }
 
     private class ParserHolder {
