@@ -1,4 +1,4 @@
-package com.cosium.openapi.annotation_processor;
+package com.cosium.openapi.annotation_processor.documentator;
 
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
 

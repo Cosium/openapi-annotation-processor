@@ -1,6 +1,4 @@
-package com.cosium.openapi.annotation_processor;
-
-import javax.annotation.processing.Filer;
+package com.cosium.openapi.annotation_processor.documentator;
 
 /**
  * Created on 12/07/17.
@@ -12,6 +10,6 @@ public interface DocumentatorFactory {
     /**
      * @return A new documentator
      */
-    Documentator build(Filer filer);
+    Documentator build(IDocumentatorOptions options);
 
 }

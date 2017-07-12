@@ -1,21 +1,25 @@
 package com.cosium.openapi.annotation_processor;
 
+import com.cosium.openapi.annotation_processor.documentator.DocumentatorFactory;
+import com.cosium.openapi.annotation_processor.documentator.DocumentatorOptions;
+import com.cosium.openapi.annotation_processor.documentator.IDocumentatorOptions;
 import com.cosium.openapi.annotation_processor.documentator.openapi_20.OpenAPI20DocumentatorFactory;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
+import com.cosium.openapi.annotation_processor.parser.PathParser;
+import com.cosium.openapi.annotation_processor.parser.PathParserFactory;
 import com.cosium.openapi.annotation_processor.parser.spring.SpringParserFactory;
 import com.google.auto.service.AutoService;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,6 +31,10 @@ import static java.util.Objects.requireNonNull;
 @AutoService(Processor.class)
 public class OpenAPIProcessor extends AbstractProcessor {
 
+    private static final String BASE_PATH_OPTION = "basePath";
+    private static final String PRODUCES_OPTION = "produces";
+    private static final String CONSUMES_OPTION = "consumes";
+
     private final List<PathParserFactory> parserFactories = new ArrayList<>();
     private final List<DocumentatorFactory> documentatorFactories = new ArrayList<>();
 
@@ -34,6 +42,8 @@ public class OpenAPIProcessor extends AbstractProcessor {
     private Elements elementUtils;
     private Filer filer;
     private Messager messager;
+
+    private IDocumentatorOptions documentatorOptions;
 
     public OpenAPIProcessor() {
         parserFactories.add(new SpringParserFactory());
@@ -49,18 +59,40 @@ public class OpenAPIProcessor extends AbstractProcessor {
     }
 
     @Override
+    public Set<String> getSupportedOptions() {
+        return new HashSet<>(Arrays.asList(BASE_PATH_OPTION, PRODUCES_OPTION, CONSUMES_OPTION));
+    }
+
+    @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         this.typeUtils = processingEnv.getTypeUtils();
         this.elementUtils = processingEnv.getElementUtils();
         this.filer = processingEnv.getFiler();
         this.messager = processingEnv.getMessager();
+
+        Map<String, String> options = processingEnv.getOptions();
+
+        DocumentatorOptions.BuildFinal documentatorOptionsBuilder = DocumentatorOptions
+                .builder()
+                .basePath(options.getOrDefault(BASE_PATH_OPTION, "/"));
+
+        Stream.of(StringUtils.split(options.get(CONSUMES_OPTION), ","))
+                .forEach(documentatorOptionsBuilder::addConsumes);
+        Stream.of(StringUtils.split(options.get(PRODUCES_OPTION), ","))
+                .forEach(documentatorOptionsBuilder::addProduces);
+
+        this.documentatorOptions = documentatorOptionsBuilder.build();
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         AtomicReference<Element> currentAnnotatedElement = new AtomicReference<>();
+        doProcess(roundEnv, currentAnnotatedElement);
+        return true;
+    }
 
+    private void doProcess(RoundEnvironment roundEnv, AtomicReference<Element> currentAnnotatedElement) {
         List<ParsedPath> parsedPaths = parserFactories
                 .stream()
                 .map(ParserHolder::new)
@@ -78,10 +110,8 @@ public class OpenAPIProcessor extends AbstractProcessor {
 
         documentatorFactories
                 .stream()
-                .map(documentatorFactory -> documentatorFactory.build(filer))
+                .map(documentatorFactory -> documentatorFactory.build(documentatorOptions))
                 .forEach(documentator -> documentator.document(parsedPaths));
-
-        return true;
     }
 
     private class ParserHolder {

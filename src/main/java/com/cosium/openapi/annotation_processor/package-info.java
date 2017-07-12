@@ -1,7 +1,7 @@
 @Value.Style(
         stagedBuilder = true,
         strictBuilder = true,
-        typeAbstract = {"*_"},
+        typeAbstract = {"I*"},
         typeImmutable = "*"
 )
 package com.cosium.openapi.annotation_processor;

@@ -1,9 +1,8 @@
 package com.cosium.openapi.annotation_processor.documentator.openapi_20;
 
-import com.cosium.openapi.annotation_processor.Documentator;
-import com.cosium.openapi.annotation_processor.DocumentatorFactory;
-
-import javax.annotation.processing.Filer;
+import com.cosium.openapi.annotation_processor.documentator.Documentator;
+import com.cosium.openapi.annotation_processor.documentator.DocumentatorFactory;
+import com.cosium.openapi.annotation_processor.documentator.IDocumentatorOptions;
 
 /**
  * Created on 12/07/17.
@@ -12,7 +11,7 @@ import javax.annotation.processing.Filer;
  */
 public class OpenAPI20DocumentatorFactory implements DocumentatorFactory {
     @Override
-    public Documentator build(Filer filer) {
+    public Documentator build(IDocumentatorOptions options) {
         return null;
     }
 }

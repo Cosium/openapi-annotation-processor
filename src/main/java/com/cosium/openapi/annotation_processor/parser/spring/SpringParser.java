@@ -1,6 +1,6 @@
 package com.cosium.openapi.annotation_processor.parser.spring;
 
-import com.cosium.openapi.annotation_processor.PathParser;
+import com.cosium.openapi.annotation_processor.parser.PathParser;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import com.cosium.openapi.annotation_processor.parser.utils.PropertyUtils;
 import io.swagger.models.ModelImpl;

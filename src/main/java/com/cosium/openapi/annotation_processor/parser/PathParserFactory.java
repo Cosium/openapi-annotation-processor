@@ -1,4 +1,4 @@
-package com.cosium.openapi.annotation_processor;
+package com.cosium.openapi.annotation_processor.parser;
 
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
