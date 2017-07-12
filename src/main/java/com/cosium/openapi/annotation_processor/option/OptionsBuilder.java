@@ -1,9 +1,9 @@
 package com.cosium.openapi.annotation_processor.option;
 
-import com.cosium.openapi.annotation_processor.codegen.CodeGeneratorOptions;
-import com.cosium.openapi.annotation_processor.codegen.ICodeGeneratorOptions;
-import com.cosium.openapi.annotation_processor.documentator.ISpecificationGeneratorOptions;
-import com.cosium.openapi.annotation_processor.documentator.SpecificationGeneratorOptions;
+import com.cosium.openapi.annotation_processor.code.CodeGeneratorOptions;
+import com.cosium.openapi.annotation_processor.code.ICodeGeneratorOptions;
+import com.cosium.openapi.annotation_processor.specification.ISpecificationGeneratorOptions;
+import com.cosium.openapi.annotation_processor.specification.SpecificationGeneratorOptions;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -21,9 +21,11 @@ import static java.util.Optional.ofNullable;
  */
 public class OptionsBuilder {
 
+    private static final String BASE_GENERATION_PACKAGE = "generation-package";
+
     private static final String SPECIFICATION_GENERATOR_PREFIX = "documentation-generator_";
 
-    private static final String SPECIFICATION_GENERATOR_BASE_PATH_OPTION = SPECIFICATION_GENERATOR_PREFIX + "basePath";
+    private static final String SPECIFICATION_GENERATOR_BASE_PATH_OPTION = SPECIFICATION_GENERATOR_PREFIX + "base-path";
     private static final String SPECIFICATION_GENERATOR_PRODUCES_OPTION = SPECIFICATION_GENERATOR_PREFIX + "produces";
     private static final String SPECIFICATION_GENERATOR_CONSUMES_OPTION = SPECIFICATION_GENERATOR_PREFIX + "consumes";
 
@@ -45,6 +47,7 @@ public class OptionsBuilder {
     public IOptions build(Map<String, String> options) {
         return Options
                 .builder()
+                .baseGenerationPackage(options.getOrDefault(BASE_GENERATION_PACKAGE, "com.cosium.openapi"))
                 .specificationGenerator(buildSpecificationGenerator(options))
                 .codeGenerator(buildCodeGenerator(options))
                 .build();

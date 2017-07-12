@@ -1,4 +1,4 @@
-package com.cosium.openapi.annotation_processor.documentator;
+package com.cosium.openapi.annotation_processor.specification;
 
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import io.swagger.models.Swagger;

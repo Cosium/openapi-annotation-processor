@@ -1,8 +1,8 @@
 package com.cosium.openapi.annotation_processor.option;
 
 
-import com.cosium.openapi.annotation_processor.codegen.ICodeGeneratorOptions;
-import com.cosium.openapi.annotation_processor.documentator.ISpecificationGeneratorOptions;
+import com.cosium.openapi.annotation_processor.code.ICodeGeneratorOptions;
+import com.cosium.openapi.annotation_processor.specification.ISpecificationGeneratorOptions;
 import org.immutables.value.Value;
 
 /**
@@ -13,8 +13,19 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface IOptions {
 
+    /**
+     * @return The base package that will be used to generate all resources
+     */
+    String baseGenerationPackage();
+
+    /**
+     * @return The specification generator options
+     */
     ISpecificationGeneratorOptions specificationGenerator();
 
+    /**
+     * @return The code generator options
+     */
     ICodeGeneratorOptions codeGenerator();
 
 }

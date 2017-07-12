@@ -1,9 +1,9 @@
 package com.cosium.openapi.annotation_processor;
 
-import com.cosium.openapi.annotation_processor.codegen.CodeGenerator;
-import com.cosium.openapi.annotation_processor.codegen.DefaultCodeGenerator;
-import com.cosium.openapi.annotation_processor.documentator.DefaultSpecificationGenerator;
-import com.cosium.openapi.annotation_processor.documentator.SpecificationGenerator;
+import com.cosium.openapi.annotation_processor.code.CodeGenerator;
+import com.cosium.openapi.annotation_processor.code.DefaultCodeGenerator;
+import com.cosium.openapi.annotation_processor.specification.DefaultSpecificationGenerator;
+import com.cosium.openapi.annotation_processor.specification.SpecificationGenerator;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import com.cosium.openapi.annotation_processor.option.IOptions;
 import com.cosium.openapi.annotation_processor.option.OptionsBuilder;
@@ -11,7 +11,6 @@ import com.cosium.openapi.annotation_processor.parser.PathParser;
 import com.cosium.openapi.annotation_processor.parser.PathParserFactory;
 import com.cosium.openapi.annotation_processor.parser.spring.SpringParserFactory;
 import com.google.auto.service.AutoService;
-import io.swagger.models.Swagger;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.Element;
@@ -41,7 +40,6 @@ public class OpenAPIProcessor extends AbstractProcessor {
 
     private Types typeUtils;
     private Elements elementUtils;
-    private Filer filer;
     private Messager messager;
 
     private SpecificationGenerator specificationGenerator;
@@ -69,12 +67,18 @@ public class OpenAPIProcessor extends AbstractProcessor {
         super.init(processingEnv);
         this.typeUtils = processingEnv.getTypeUtils();
         this.elementUtils = processingEnv.getElementUtils();
-        this.filer = processingEnv.getFiler();
         this.messager = processingEnv.getMessager();
 
+        Filer filer = processingEnv.getFiler();
         IOptions options = optionsBuilder.build(processingEnv.getOptions());
-        this.specificationGenerator = new DefaultSpecificationGenerator(options.specificationGenerator());
-        this.codeGenerator = new DefaultCodeGenerator(options.codeGenerator());
+        this.specificationGenerator = new DefaultSpecificationGenerator(
+                options.specificationGenerator(),
+                new DefaultFileManager(options.baseGenerationPackage() + ".specification", filer)
+        );
+        this.codeGenerator = new DefaultCodeGenerator(
+                options.codeGenerator(),
+                new DefaultFileManager(options.baseGenerationPackage() + ".generated_code", filer)
+        );
     }
 
     @Override
@@ -104,9 +108,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
                             .flatMap(Collection::stream);
                 })
                 .collect(Collectors.toList());
-
         currentAnnotatedElement.set(null);
-
         codeGenerator.generate(specificationGenerator.generate(parsedPaths));
     }
 

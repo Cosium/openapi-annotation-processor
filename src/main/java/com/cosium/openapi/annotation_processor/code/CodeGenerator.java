@@ -1,4 +1,4 @@
-package com.cosium.openapi.annotation_processor.codegen;
+package com.cosium.openapi.annotation_processor.code;
 
 import io.swagger.models.Swagger;
 
