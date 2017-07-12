@@ -10,7 +10,7 @@ import java.util.List;
  * @author Reda.Housni-Alaoui
  */
 @Value.Immutable
-public interface IDocumentatorOptions {
+public interface ISpecificationGeneratorOptions {
 
     String basePath();
 

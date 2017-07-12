@@ -20,6 +20,7 @@
         <google.compile.testing.version>0.8</google.compile.testing.version>
 
         <swagger-core.version>1.5.15</swagger-core.version>
+        <swagger-codegen.version>2.2.2</swagger-codegen.version>
         <commons.lang3.version>3.3.2</commons.lang3.version>
         <spring.version>4.3.0.RELEASE</spring.version>
     </properties>
@@ -29,6 +30,12 @@
             <groupId>io.swagger</groupId>
             <artifactId>swagger-core</artifactId>
             <version>${swagger-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-codegen</artifactId>
+            <version>${swagger-codegen.version}</version>
         </dependency>
 
         <dependency>

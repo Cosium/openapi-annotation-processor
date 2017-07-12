@@ -1,7 +1,5 @@
-package com.cosium.openapi.annotation_processor.documentator.openapi_20;
+package com.cosium.openapi.annotation_processor.documentator;
 
-import com.cosium.openapi.annotation_processor.documentator.Documentator;
-import com.cosium.openapi.annotation_processor.documentator.IDocumentatorOptions;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import io.swagger.models.Swagger;
 
@@ -14,21 +12,21 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-class OpenAPI20Documentator implements Documentator {
+public class DefaultSpecificationGenerator implements SpecificationGenerator {
 
-    private final IDocumentatorOptions options;
+    private final ISpecificationGeneratorOptions options;
 
-    OpenAPI20Documentator(IDocumentatorOptions options) {
+    public DefaultSpecificationGenerator(ISpecificationGeneratorOptions options) {
         requireNonNull(options);
         this.options = options;
     }
 
     @Override
-    public void document(List<ParsedPath> parsedPaths) {
+    public Swagger generate(List<ParsedPath> parsedPaths) {
         Swagger swagger = new Swagger();
         swagger.basePath(options.basePath());
         swagger.produces(options.produces());
         parsedPaths.forEach(parsedPath -> swagger.path(parsedPath.getPathTemplate(), parsedPath.getPath()));
-
+        return swagger;
     }
 }

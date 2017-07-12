@@ -1,7 +1,8 @@
 package com.cosium.openapi.annotation_processor.option;
 
 
-import com.cosium.openapi.annotation_processor.documentator.IDocumentatorOptions;
+import com.cosium.openapi.annotation_processor.codegen.ICodeGeneratorOptions;
+import com.cosium.openapi.annotation_processor.documentator.ISpecificationGeneratorOptions;
 import org.immutables.value.Value;
 
 /**
@@ -12,6 +13,8 @@ import org.immutables.value.Value;
 @Value.Immutable
 public interface IOptions {
 
-    IDocumentatorOptions documentator();
+    ISpecificationGeneratorOptions specificationGenerator();
+
+    ICodeGeneratorOptions codeGenerator();
 
 }

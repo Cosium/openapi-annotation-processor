@@ -1,7 +1,7 @@
 package com.cosium.openapi.annotation_processor;
 
-import com.cosium.openapi.annotation_processor.documentator.DocumentatorFactory;
-import com.cosium.openapi.annotation_processor.documentator.openapi_20.OpenAPI20DocumentatorFactory;
+import com.cosium.openapi.annotation_processor.documentator.DefaultSpecificationGenerator;
+import com.cosium.openapi.annotation_processor.documentator.SpecificationGenerator;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import com.cosium.openapi.annotation_processor.option.IOptions;
 import com.cosium.openapi.annotation_processor.option.OptionsBuilder;
@@ -9,6 +9,7 @@ import com.cosium.openapi.annotation_processor.parser.PathParser;
 import com.cosium.openapi.annotation_processor.parser.PathParserFactory;
 import com.cosium.openapi.annotation_processor.parser.spring.SpringParserFactory;
 import com.google.auto.service.AutoService;
+import io.swagger.models.Swagger;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.Element;
@@ -33,7 +34,6 @@ import static java.util.Objects.requireNonNull;
 public class OpenAPIProcessor extends AbstractProcessor {
 
     private final List<PathParserFactory> parserFactories = new ArrayList<>();
-    private final List<DocumentatorFactory> documentatorFactories = new ArrayList<>();
     private final OptionsBuilder optionsBuilder = new OptionsBuilder();
 
     private Types typeUtils;
@@ -41,11 +41,10 @@ public class OpenAPIProcessor extends AbstractProcessor {
     private Filer filer;
     private Messager messager;
 
-    private IOptions options;
+    private SpecificationGenerator specificationGenerator;
 
     public OpenAPIProcessor() {
         parserFactories.add(new SpringParserFactory());
-        documentatorFactories.add(new OpenAPI20DocumentatorFactory());
     }
 
     @Override
@@ -69,7 +68,8 @@ public class OpenAPIProcessor extends AbstractProcessor {
         this.filer = processingEnv.getFiler();
         this.messager = processingEnv.getMessager();
 
-        this.options = optionsBuilder.build(processingEnv.getOptions());
+        IOptions options = optionsBuilder.build(processingEnv.getOptions());
+        this.specificationGenerator = new DefaultSpecificationGenerator(options.specificationGenerator());
     }
 
     @Override
@@ -95,10 +95,9 @@ public class OpenAPIProcessor extends AbstractProcessor {
                 })
                 .collect(Collectors.toList());
 
-        documentatorFactories
-                .stream()
-                .map(documentatorFactory -> documentatorFactory.build(options.documentator()))
-                .forEach(documentator -> documentator.document(parsedPaths));
+        Swagger swagger = specificationGenerator.generate(parsedPaths);
+
+
     }
 
     private class ParserHolder {
