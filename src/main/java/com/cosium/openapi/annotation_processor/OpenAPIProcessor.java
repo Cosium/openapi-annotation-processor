@@ -1,25 +1,26 @@
 package com.cosium.openapi.annotation_processor;
 
 import com.cosium.openapi.annotation_processor.documentator.DocumentatorFactory;
-import com.cosium.openapi.annotation_processor.documentator.DocumentatorOptions;
-import com.cosium.openapi.annotation_processor.documentator.IDocumentatorOptions;
 import com.cosium.openapi.annotation_processor.documentator.openapi_20.OpenAPI20DocumentatorFactory;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
+import com.cosium.openapi.annotation_processor.option.IOptions;
+import com.cosium.openapi.annotation_processor.option.OptionsBuilder;
 import com.cosium.openapi.annotation_processor.parser.PathParser;
 import com.cosium.openapi.annotation_processor.parser.PathParserFactory;
 import com.cosium.openapi.annotation_processor.parser.spring.SpringParserFactory;
 import com.google.auto.service.AutoService;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,21 +32,16 @@ import static java.util.Objects.requireNonNull;
 @AutoService(Processor.class)
 public class OpenAPIProcessor extends AbstractProcessor {
 
-    private static final String BASE_PATH_OPTION = "basePath";
-    private static final String PRODUCES_OPTION = "produces";
-    private static final String CONSUMES_OPTION = "consumes";
-
-    private static final String APPLICATION_JSON = "application/json";
-
     private final List<PathParserFactory> parserFactories = new ArrayList<>();
     private final List<DocumentatorFactory> documentatorFactories = new ArrayList<>();
+    private final OptionsBuilder optionsBuilder = new OptionsBuilder();
 
     private Types typeUtils;
     private Elements elementUtils;
     private Filer filer;
     private Messager messager;
 
-    private IDocumentatorOptions documentatorOptions;
+    private IOptions options;
 
     public OpenAPIProcessor() {
         parserFactories.add(new SpringParserFactory());
@@ -62,7 +58,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedOptions() {
-        return new HashSet<>(Arrays.asList(BASE_PATH_OPTION, PRODUCES_OPTION, CONSUMES_OPTION));
+        return optionsBuilder.getSupportedOptions();
     }
 
     @Override
@@ -73,18 +69,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
         this.filer = processingEnv.getFiler();
         this.messager = processingEnv.getMessager();
 
-        Map<String, String> options = processingEnv.getOptions();
-
-        DocumentatorOptions.BuildFinal documentatorOptionsBuilder = DocumentatorOptions
-                .builder()
-                .basePath(options.getOrDefault(BASE_PATH_OPTION, "/"));
-
-        Stream.of(StringUtils.split(StringUtils.defaultIfBlank(options.get(CONSUMES_OPTION), APPLICATION_JSON), ","))
-                .forEach(documentatorOptionsBuilder::addConsumes);
-        Stream.of(StringUtils.split(StringUtils.defaultIfBlank(options.get(PRODUCES_OPTION), APPLICATION_JSON), ","))
-                .forEach(documentatorOptionsBuilder::addProduces);
-
-        this.documentatorOptions = documentatorOptionsBuilder.build();
+        this.options = optionsBuilder.build(processingEnv.getOptions());
     }
 
     @Override
@@ -112,7 +97,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
 
         documentatorFactories
                 .stream()
-                .map(documentatorFactory -> documentatorFactory.build(documentatorOptions))
+                .map(documentatorFactory -> documentatorFactory.build(options.documentator()))
                 .forEach(documentator -> documentator.document(parsedPaths));
     }
 
