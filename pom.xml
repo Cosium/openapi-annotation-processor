@@ -14,11 +14,28 @@
 
     <properties>
         <source.level>1.8</source.level>
+        <immutables.version>2.3.9</immutables.version>
         <google.auto.version>1.0-rc3</google.auto.version>
         <google.compile.testing.version>0.8</google.compile.testing.version>
+
+        <spring.version>4.3.0.RELEASE</spring.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.immutables</groupId>
+            <artifactId>value</artifactId>
+            <version>${immutables.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>com.google.auto.service</groupId>
             <artifactId>auto-service</artifactId>
