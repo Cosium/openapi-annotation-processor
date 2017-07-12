@@ -12,6 +12,6 @@ import com.cosium.openapi.annotation_processor.documentator.IDocumentatorOptions
 public class OpenAPI20DocumentatorFactory implements DocumentatorFactory {
     @Override
     public Documentator build(IDocumentatorOptions options) {
-        return null;
+        return new OpenAPI20Documentator(options);
     }
 }
