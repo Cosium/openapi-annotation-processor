@@ -98,8 +98,8 @@ public class OpenAPIProcessor extends AbstractProcessor {
         try {
             doProcess(roundEnv, currentAnnotatedElement, lastRound);
         } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
             messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage(), currentAnnotatedElement.get());
-            e.printStackTrace();
         }
         return true;
     }

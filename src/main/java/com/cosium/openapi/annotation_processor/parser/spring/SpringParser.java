@@ -1,7 +1,7 @@
 package com.cosium.openapi.annotation_processor.parser.spring;
 
-import com.cosium.openapi.annotation_processor.parser.PathParser;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
+import com.cosium.openapi.annotation_processor.parser.PathParser;
 import com.cosium.openapi.annotation_processor.parser.utils.PropertyUtils;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
@@ -10,8 +10,6 @@ import io.swagger.models.Response;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +20,6 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.nonNull;
-import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 12/07/17.
@@ -57,7 +54,7 @@ class SpringParser implements PathParser {
                 .forEach(
                         executableElement -> getPathTemplate(executableElement.getAnnotation(RequestMapping.class))
                                 .forEach(
-                                        s -> methodsByPathTemplate.putIfAbsent(s, new ArrayList<>()).add(executableElement)
+                                        pathTemplate -> methodsByPathTemplate.getOrDefault(pathTemplate, new ArrayList<>()).add(executableElement)
                                 )
                 );
 
@@ -65,9 +62,9 @@ class SpringParser implements PathParser {
         List<ParsedPath> parsedPaths = new ArrayList<>();
         methodsByPathTemplate
                 .forEach((pathTemplate, executableElements) -> {
-            Path path = buildPath(executableElements);
-            basePathTemplates.forEach(basePathTemplate -> parsedPaths.add(new ParsedPath(basePathTemplate + pathTemplate, path)));
-        });
+                    Path path = buildPath(executableElements);
+                    basePathTemplates.forEach(basePathTemplate -> parsedPaths.add(new ParsedPath(basePathTemplate + pathTemplate, path)));
+                });
         return parsedPaths;
     }
 
