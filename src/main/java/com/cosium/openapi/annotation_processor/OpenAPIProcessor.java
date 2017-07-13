@@ -83,6 +83,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        System.out.println("GO GO GO");
         AtomicReference<Element> currentAnnotatedElement = new AtomicReference<>();
         try {
             doProcess(roundEnv, currentAnnotatedElement);

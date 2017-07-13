@@ -29,13 +29,14 @@ class DefaultFileManager implements FileManager {
 
     @Override
     public FileObject createResource(CharSequence relativeName) {
-        return createResource(StringUtils.EMPTY, relativeName);
+        return createResource(null, relativeName);
     }
 
     @Override
     public FileObject createResource(CharSequence pkg, CharSequence relativeName) {
         try {
-            return filer.createResource(StandardLocation.CLASS_OUTPUT, basePackage + "." + pkg, relativeName);
+            String packageExtension = StringUtils.isNotBlank(pkg) ? "." + pkg : StringUtils.EMPTY;
+            return filer.createResource(StandardLocation.CLASS_OUTPUT, basePackage + packageExtension, relativeName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
