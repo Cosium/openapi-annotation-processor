@@ -1,6 +1,7 @@
 {
   "swagger" : "2.0",
   "basePath" : "/",
+  "consumes" : [ "application/json" ],
   "produces" : [ "application/json" ],
   "paths" : {
     "/foo/hello" : {

@@ -46,6 +46,7 @@ public class DefaultSpecificationGenerator implements SpecificationGenerator {
         Swagger swagger = cache.updateAndGet(spec -> ofNullable(spec).orElseGet(Swagger::new));
         swagger.basePath(options.basePath());
         swagger.produces(options.produces());
+        swagger.consumes(options.consumes());
         parsedPaths.forEach(parsedPath -> swagger.path(parsedPath.getPathTemplate(), parsedPath.getPath()));
 
         if (lastRound) {
