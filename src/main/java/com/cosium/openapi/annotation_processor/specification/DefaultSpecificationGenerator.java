@@ -11,8 +11,10 @@ import javax.tools.FileObject;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 /**
  * Created on 12/07/17.
@@ -24,6 +26,8 @@ public class DefaultSpecificationGenerator implements SpecificationGenerator {
     private final ISpecificationGeneratorOptions options;
     private final FileManager fileManager;
 
+    private final AtomicReference<Swagger> cache = new AtomicReference<>();
+
     public DefaultSpecificationGenerator(ISpecificationGeneratorOptions options, FileManager fileManager) {
         requireNonNull(options);
         requireNonNull(fileManager);
@@ -32,17 +36,18 @@ public class DefaultSpecificationGenerator implements SpecificationGenerator {
     }
 
     @Override
-    public Swagger generate(List<ParsedPath> parsedPaths) {
-        Swagger swagger = new Swagger();
+    public Swagger generate(List<ParsedPath> parsedPaths, boolean lastRound) {
+        Swagger swagger = cache.updateAndGet(spec -> ofNullable(spec).orElseGet(Swagger::new));
         swagger.basePath(options.basePath());
         swagger.produces(options.produces());
         parsedPaths.forEach(parsedPath -> swagger.path(parsedPath.getPathTemplate(), parsedPath.getPath()));
 
-        FileObject yaml = fileManager.createResource("api.yaml");
-        write(Yaml.pretty(), yaml, swagger);
-
-        FileObject json = fileManager.createResource("api.json");
-        write(Json.pretty(), json, swagger);
+        if (lastRound) {
+            FileObject yaml = fileManager.createResource("api.yaml");
+            write(Yaml.pretty(), yaml, swagger);
+            FileObject json = fileManager.createResource("api.json");
+            write(Json.pretty(), json, swagger);
+        }
 
         return swagger;
     }

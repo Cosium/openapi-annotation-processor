@@ -2,15 +2,16 @@ package com.cosium.openapi.annotation_processor;
 
 import com.cosium.openapi.annotation_processor.code.CodeGenerator;
 import com.cosium.openapi.annotation_processor.code.DefaultCodeGenerator;
-import com.cosium.openapi.annotation_processor.specification.DefaultSpecificationGenerator;
-import com.cosium.openapi.annotation_processor.specification.SpecificationGenerator;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import com.cosium.openapi.annotation_processor.option.IOptions;
 import com.cosium.openapi.annotation_processor.option.OptionsBuilder;
 import com.cosium.openapi.annotation_processor.parser.PathParser;
 import com.cosium.openapi.annotation_processor.parser.PathParserFactory;
 import com.cosium.openapi.annotation_processor.parser.spring.SpringParserFactory;
+import com.cosium.openapi.annotation_processor.specification.DefaultSpecificationGenerator;
+import com.cosium.openapi.annotation_processor.specification.SpecificationGenerator;
 import com.google.auto.service.AutoService;
+import io.swagger.models.Swagger;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.Element;
@@ -83,7 +84,6 @@ public class OpenAPIProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        System.out.println("GO GO GO");
         AtomicReference<Element> currentAnnotatedElement = new AtomicReference<>();
         try {
             doProcess(roundEnv, currentAnnotatedElement);
@@ -110,7 +110,11 @@ public class OpenAPIProcessor extends AbstractProcessor {
                 })
                 .collect(Collectors.toList());
         currentAnnotatedElement.set(null);
-        codeGenerator.generate(specificationGenerator.generate(parsedPaths));
+        boolean lastRound = roundEnv.processingOver();
+        Swagger specification = specificationGenerator.generate(parsedPaths, lastRound);
+        if (lastRound) {
+            codeGenerator.generate(specification);
+        }
     }
 
     private class ParserHolder {

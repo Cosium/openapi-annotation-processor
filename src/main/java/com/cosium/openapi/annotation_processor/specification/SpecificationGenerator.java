@@ -15,8 +15,9 @@ public interface SpecificationGenerator {
     /**
      * Generate specification for given paths
      * @param parsedPaths The parsed paths
+     * @param lastRound True if this is the last processor annotation round
      * @return The generated specification
      */
-    Swagger generate(List<ParsedPath> parsedPaths);
+    Swagger generate(List<ParsedPath> parsedPaths, boolean lastRound);
 
 }
