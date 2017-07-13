@@ -12,6 +12,8 @@ import com.cosium.openapi.annotation_processor.specification.DefaultSpecificatio
 import com.cosium.openapi.annotation_processor.specification.SpecificationGenerator;
 import com.google.auto.service.AutoService;
 import io.swagger.models.Swagger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.processing.*;
 import javax.lang.model.element.Element;
@@ -35,6 +37,8 @@ import static java.util.Objects.requireNonNull;
  */
 @AutoService(Processor.class)
 public class OpenAPIProcessor extends AbstractProcessor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OpenAPIProcessor.class);
 
     private final List<PathParserFactory> parserFactories = new ArrayList<>();
     private final OptionsBuilder optionsBuilder = new OptionsBuilder();
@@ -84,9 +88,15 @@ public class OpenAPIProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        boolean lastRound = roundEnv.processingOver();
+        if (lastRound) {
+            LOG.debug("Processing last round");
+        } else {
+            LOG.debug("Processing");
+        }
         AtomicReference<Element> currentAnnotatedElement = new AtomicReference<>();
         try {
-            doProcess(roundEnv, currentAnnotatedElement);
+            doProcess(roundEnv, currentAnnotatedElement, lastRound);
         } catch (Exception e) {
             messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage(), currentAnnotatedElement.get());
             e.printStackTrace();
@@ -94,7 +104,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
         return true;
     }
 
-    private void doProcess(RoundEnvironment roundEnv, AtomicReference<Element> currentAnnotatedElement) {
+    private void doProcess(RoundEnvironment roundEnv, AtomicReference<Element> currentAnnotatedElement, boolean lastRound) {
         List<ParsedPath> parsedPaths = parserFactories
                 .stream()
                 .map(ParserHolder::new)
@@ -105,14 +115,19 @@ public class OpenAPIProcessor extends AbstractProcessor {
                             .getElementsAnnotatedWith(annotation)
                             .stream()
                             .peek(currentAnnotatedElement::set)
+                            .peek(o -> LOG.debug("Parsing paths from {}", o))
                             .map(pathParser::parse)
                             .flatMap(Collection::stream);
                 })
                 .collect(Collectors.toList());
         currentAnnotatedElement.set(null);
-        boolean lastRound = roundEnv.processingOver();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Generating specification from {} parsed paths", parsedPaths.size());
+        }
         Swagger specification = specificationGenerator.generate(parsedPaths, lastRound);
         if (lastRound) {
+            LOG.debug("Generating code");
             codeGenerator.generate(specification);
         }
     }
