@@ -1,6 +1,7 @@
 package com.cosium.openapi.annotation_processor.model;
 
 import io.swagger.models.Path;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,5 +29,12 @@ public class ParsedPath {
 
     public Path getPath() {
         return path;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("pathTemplate", pathTemplate)
+                .toString();
     }
 }

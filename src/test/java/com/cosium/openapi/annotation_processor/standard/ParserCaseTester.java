@@ -73,7 +73,8 @@ public class ParserCaseTester {
                 .stream()
                 .peek(resource -> LOG.debug("Validating expectation on {}", resource))
                 .forEach(resource -> clause.and()
-                        .generatesFileNamed(LOCATION, resource.packageName, resource.relativeName));
+                        .generatesFileNamed(LOCATION, resource.packageName, resource.relativeName)
+                        .withContents(resource.byteSource));
     }
 
     private List<Resource> resources(Path path) {

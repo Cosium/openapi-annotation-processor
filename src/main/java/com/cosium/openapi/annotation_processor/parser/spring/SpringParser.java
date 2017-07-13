@@ -10,6 +10,8 @@ import io.swagger.models.Response;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,8 @@ import static java.util.Objects.nonNull;
  * @author Reda.Housni-Alaoui
  */
 class SpringParser implements PathParser {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SpringParser.class);
 
     private final PropertyUtils propertyUtils;
 
@@ -52,13 +56,19 @@ class SpringParser implements PathParser {
                 .filter(o -> nonNull(o.getAnnotation(RequestMapping.class)))
                 .map(ExecutableElement.class::cast)
                 .forEach(
-                        executableElement -> getPathTemplate(executableElement.getAnnotation(RequestMapping.class))
-                                .forEach(
-                                        pathTemplate -> methodsByPathTemplate.getOrDefault(pathTemplate, new ArrayList<>()).add(executableElement)
-                                )
+                        executableElement -> getPathTemplates(executableElement.getAnnotation(RequestMapping.class))
+                                .stream()
+                                .peek(pathTemplate -> LOG.debug("Extracted path template '{}'", pathTemplate))
+                                .forEach(pathTemplate -> {
+                                            methodsByPathTemplate.putIfAbsent(pathTemplate, new ArrayList<>());
+                                            methodsByPathTemplate.get(pathTemplate).add(executableElement);
+                                        })
                 );
 
-        Set<String> basePathTemplates = getPathTemplate(annotatedElement.getAnnotation(RequestMapping.class));
+        LOG.debug("Found methods by template {}", methodsByPathTemplate);
+
+        Set<String> basePathTemplates = getPathTemplates(annotatedElement.getAnnotation(RequestMapping.class));
+        LOG.debug("Found base path templates {}", basePathTemplates);
         List<ParsedPath> parsedPaths = new ArrayList<>();
         methodsByPathTemplate
                 .forEach((pathTemplate, executableElements) -> {
@@ -71,6 +81,8 @@ class SpringParser implements PathParser {
     private Path buildPath(List<ExecutableElement> executableElements) {
         Path path = new Path();
         executableElements
+                .stream()
+                .peek(executableElement -> LOG.debug("Building path for {}", executableElement))
                 .forEach(executableElement -> {
                     Operation operation = buildOperation(executableElement);
                     RequestMapping requestMapping = executableElement.getAnnotation(RequestMapping.class);
@@ -127,7 +139,7 @@ class SpringParser implements PathParser {
         return pathParameter;
     }
 
-    private Set<String> getPathTemplate(RequestMapping requestMapping) {
+    private Set<String> getPathTemplates(RequestMapping requestMapping) {
         if (requestMapping.value().length > 0) {
             return new HashSet<>(Arrays.asList(requestMapping.value()));
         } else {

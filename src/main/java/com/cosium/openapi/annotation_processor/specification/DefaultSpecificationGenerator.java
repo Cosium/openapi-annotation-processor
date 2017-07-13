@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import io.swagger.models.Swagger;
 import io.swagger.util.Json;
 import io.swagger.util.Yaml;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.tools.FileObject;
 import java.io.IOException;
@@ -23,6 +25,8 @@ import static java.util.Optional.ofNullable;
  */
 public class DefaultSpecificationGenerator implements SpecificationGenerator {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultSpecificationGenerator.class);
+
     private final ISpecificationGeneratorOptions options;
     private final FileManager fileManager;
 
@@ -37,6 +41,8 @@ public class DefaultSpecificationGenerator implements SpecificationGenerator {
 
     @Override
     public Swagger generate(List<ParsedPath> parsedPaths, boolean lastRound) {
+        LOG.debug("Generating specification for {}", parsedPaths);
+
         Swagger swagger = cache.updateAndGet(spec -> ofNullable(spec).orElseGet(Swagger::new));
         swagger.basePath(options.basePath());
         swagger.produces(options.produces());
