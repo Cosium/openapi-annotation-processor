@@ -1,7 +1,6 @@
 package com.cosium.openapi.annotation_processor.standard;
 
 import com.cosium.openapi.annotation_processor.OpenAPIProcessor;
-import com.cosium.openapi.annotation_processor.option.Options;
 import com.google.common.io.ByteSource;
 import com.google.common.truth.Truth;
 import com.google.testing.compile.CompileTester;
