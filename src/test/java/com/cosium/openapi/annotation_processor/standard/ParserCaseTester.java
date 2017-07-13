@@ -61,7 +61,7 @@ public class ParserCaseTester {
         LOG.info("Running test '{}' for parser '{}'", caseName, parserName);
 
         List<JavaFileObject> inputs = subFileObjetcs(inputPath);
-        LOG.info("Using inputs {}", inputs);
+        LOG.debug("Using inputs {}", inputs);
 
         CompileTester.SuccessfulCompilationClause clause = Truth.assert_()
                 .about(JavaSourcesSubjectFactory.javaSources())
@@ -71,7 +71,7 @@ public class ParserCaseTester {
 
         resources(expectedPath)
                 .stream()
-                .peek(resource -> LOG.info("Validating expectation on {}", resource))
+                .peek(resource -> LOG.debug("Validating expectation on {}", resource))
                 .forEach(resource -> clause.and()
                         .generatesFileNamed(LOCATION, resource.packageName, resource.relativeName));
     }
