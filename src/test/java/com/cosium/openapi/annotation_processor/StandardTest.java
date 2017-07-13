@@ -17,13 +17,13 @@ public class StandardTest {
 
     private final Path basePath;
 
-    public StandardTest() throws Exception{
+    public StandardTest() throws Exception {
         URL url = getClass().getResource("/standard");
         this.basePath = Paths.get(url.toURI());
     }
 
     @Test
-    public void test() throws Exception{
+    public void test() throws Exception {
         PathUtils
                 .subDirectories(basePath)
                 .stream()
