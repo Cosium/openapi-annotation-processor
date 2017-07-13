@@ -9,6 +9,10 @@ import io.swagger.models.Swagger;
  */
 public interface CodeGenerator {
 
+    /**
+     * Generates code from specification
+     * @param swagger The specifiction to generate code from
+     */
     void generate(Swagger swagger);
 
 }

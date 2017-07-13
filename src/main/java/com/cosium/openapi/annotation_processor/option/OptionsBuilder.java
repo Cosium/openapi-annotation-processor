@@ -7,7 +7,7 @@ import com.cosium.openapi.annotation_processor.specification.SpecificationGenera
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -36,7 +36,8 @@ public class OptionsBuilder {
     private static final String APPLICATION_JSON = "application/json";
 
     public Set<String> getSupportedOptions() {
-        return new HashSet<>(Arrays.asList(
+        return new LinkedHashSet<>(Arrays.asList(
+                BASE_GENERATION_PACKAGE,
                 SPECIFICATION_GENERATOR_BASE_PATH_OPTION,
                 SPECIFICATION_GENERATOR_PRODUCES_OPTION,
                 SPECIFICATION_GENERATOR_CONSUMES_OPTION,
