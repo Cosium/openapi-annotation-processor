@@ -1,8 +1,8 @@
 package com.cosium.openapi.annotation_processor.standard;
 
 import com.cosium.openapi.annotation_processor.OpenAPIProcessor;
+import com.cosium.openapi.annotation_processor.option.Options;
 import com.google.common.io.ByteSource;
-import com.google.common.io.Files;
 import com.google.common.truth.Truth;
 import com.google.testing.compile.CompileTester;
 import com.google.testing.compile.JavaFileObjects;
@@ -14,9 +14,15 @@ import org.slf4j.LoggerFactory;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -35,6 +41,7 @@ public class ParserCaseTester {
     private final String parserName;
     private final String caseName;
 
+    private final Path optionsPath;
     private final Path inputPath;
     private final Path expectedPath;
 
@@ -45,6 +52,7 @@ public class ParserCaseTester {
         this.parserName = parserName;
         this.caseName = path.getFileName().toString();
 
+        this.optionsPath = path.resolve("options.properties");
         this.inputPath = path.resolve("input");
         this.expectedPath = path.resolve("expected");
     }
@@ -57,15 +65,19 @@ public class ParserCaseTester {
         }
     }
 
-    public void doTest() throws Exception {
+    private void doTest() throws Exception {
         LOG.info("Running test '{}' for parser '{}'", caseName, parserName);
 
         List<JavaFileObject> inputs = subFileObjetcs(inputPath);
         LOG.debug("Using inputs {}", inputs);
 
+        List<String> options = parseOptions();
+        LOG.debug("Using options {}", options);
+
         CompileTester.SuccessfulCompilationClause clause = Truth.assert_()
                 .about(JavaSourcesSubjectFactory.javaSources())
                 .that(subFileObjetcs(inputPath))
+                .withCompilerOptions(options)
                 .processedWith(new OpenAPIProcessor())
                 .compilesWithoutError();
 
@@ -75,6 +87,22 @@ public class ParserCaseTester {
                 .forEach(resource -> clause.and()
                         .generatesFileNamed(LOCATION, resource.packageName, resource.relativeName)
                         .withContents(resource.byteSource));
+    }
+
+    private List<String> parseOptions() {
+        if (!Files.exists(optionsPath)) {
+            return Collections.emptyList();
+        }
+        Properties properties = new Properties();
+        try (InputStream inputStream = Files.newInputStream(optionsPath)) {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        List<String> options = new ArrayList<>();
+        properties.forEach((key, value) -> options.add("-A" + key + "=\"" + value + "\""));
+        return options;
     }
 
     private List<Resource> resources(Path path) {
@@ -109,7 +137,7 @@ public class ParserCaseTester {
         private Resource(Path rootPath, Path path) {
             requireNonNull(path);
 
-            this.byteSource = Files.asByteSource(path.toFile());
+            this.byteSource = com.google.common.io.Files.asByteSource(path.toFile());
             this.packageName = rootPath.relativize(path).getParent().toString();
             this.relativeName = path.getFileName().toString();
         }
