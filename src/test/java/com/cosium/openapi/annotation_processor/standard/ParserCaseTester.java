@@ -32,8 +32,7 @@ public class ParserCaseTester {
     private final String caseName;
 
     private final Path inputPath;
-    private final Path expectedCodePath;
-    private final Path expectedSpecificationPath;
+    private final Path expectedPath;
 
     public ParserCaseTester(String parserName, Path path) {
         requireNonNull(parserName);
@@ -43,9 +42,7 @@ public class ParserCaseTester {
         this.caseName = path.getFileName().toString();
 
         this.inputPath = path.resolve("input");
-        Path expected = path.resolve("expected");
-        this.expectedCodePath = expected.resolve("code");
-        this.expectedSpecificationPath = expected.resolve("specification");
+        this.expectedPath = path.resolve("expected");
     }
 
     public void test() {
