@@ -1,9 +1,13 @@
 package com.cosium.openapi.annotation_processor.standard;
 
 import com.cosium.openapi.annotation_processor.OpenAPIProcessor;
+import com.google.common.io.ByteSource;
+import com.google.common.io.Files;
 import com.google.common.truth.Truth;
+import com.google.testing.compile.CompileTester;
 import com.google.testing.compile.JavaFileObjects;
 import com.google.testing.compile.JavaSourcesSubjectFactory;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,17 +60,31 @@ public class ParserCaseTester {
     public void doTest() throws Exception {
         LOG.info("Running test '{}' for parser '{}'", caseName, parserName);
 
-        List<JavaFileObject> inputs = subFiles(inputPath);
-        LOG.debug("Collected {} inputs", inputs.size());
+        List<JavaFileObject> inputs = subFileObjetcs(inputPath);
+        LOG.info("Using inputs {}", inputs);
 
-        Truth.assert_()
+        CompileTester.SuccessfulCompilationClause clause = Truth.assert_()
                 .about(JavaSourcesSubjectFactory.javaSources())
-                .that(subFiles(inputPath))
+                .that(subFileObjetcs(inputPath))
                 .processedWith(new OpenAPIProcessor())
                 .compilesWithoutError();
+
+        resources(expectedPath)
+                .stream()
+                .peek(resource -> LOG.info("Validating expectation on {}", resource))
+                .forEach(resource -> clause.and()
+                        .generatesFileNamed(LOCATION, resource.packageName, resource.relativeName));
     }
 
-    private List<JavaFileObject> subFiles(Path path){
+    private List<Resource> resources(Path path) {
+        return PathUtils
+                .subFiles(path)
+                .stream()
+                .map(subPath -> new Resource(path, subPath))
+                .collect(Collectors.toList());
+    }
+
+    private List<JavaFileObject> subFileObjetcs(Path path) {
         return PathUtils
                 .subFiles(path)
                 .stream()
@@ -80,6 +98,29 @@ public class ParserCaseTester {
                 })
                 .map(JavaFileObjects::forResource)
                 .collect(Collectors.toList());
+    }
+
+    private class Resource {
+        private final ByteSource byteSource;
+        private final String packageName;
+        private final String relativeName;
+
+        private Resource(Path rootPath, Path path) {
+            requireNonNull(path);
+
+            this.byteSource = Files.asByteSource(path.toFile());
+            this.packageName = rootPath.relativize(path).getParent().toString();
+            this.relativeName = path.getFileName().toString();
+        }
+
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this)
+                    .append("packageName", packageName)
+                    .append("relativeName", relativeName)
+                    .toString();
+        }
     }
 
 }
