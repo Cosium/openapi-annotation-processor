@@ -8,7 +8,9 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.io.File;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
@@ -73,7 +75,16 @@ public class PropertyUtils {
                 property = new UUIDProperty();
             } else if (isSubtype(type, File.class)) {
                 property = new FileProperty();
+            } else if (isSubtype(type, Collection.class)) {
+                property = new ArrayProperty();
+            } else if (isSubtype(type, Map.class)) {
+                property = new MapProperty();
             }
+        }
+
+        if (property instanceof ArrayProperty) {
+            ArrayProperty arrayProperty = (ArrayProperty) property;
+            arrayProperty.setItems(new ObjectProperty());
         }
 
         return property;
