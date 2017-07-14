@@ -11,7 +11,7 @@ public interface CodeGenerator {
 
     /**
      * Generates code from specification
-     * @param swagger The specifiction to generate code from
+     * @param swagger The specification to generate code from
      */
     void generate(Swagger swagger);
 
