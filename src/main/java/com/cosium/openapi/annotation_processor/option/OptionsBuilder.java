@@ -21,15 +21,17 @@ import static java.util.Optional.ofNullable;
  */
 public class OptionsBuilder {
 
-    private static final String BASE_GENERATION_PACKAGE = "generation_package";
+    private static final String PREFIX = "com.cosium.openapi.";
 
-    private static final String SPECIFICATION_GENERATOR_PREFIX = "documentation_generator_";
+    private static final String BASE_GENERATION_PACKAGE = PREFIX + "generation_package";
+
+    private static final String SPECIFICATION_GENERATOR_PREFIX = PREFIX + "documentation_generator.";
 
     private static final String SPECIFICATION_GENERATOR_BASE_PATH_OPTION = SPECIFICATION_GENERATOR_PREFIX + "base_path";
     private static final String SPECIFICATION_GENERATOR_PRODUCES_OPTION = SPECIFICATION_GENERATOR_PREFIX + "produces";
     private static final String SPECIFICATION_GENERATOR_CONSUMES_OPTION = SPECIFICATION_GENERATOR_PREFIX + "consumes";
 
-    private static final String CODE_GENERATOR_PREFIX = "code_generator_";
+    private static final String CODE_GENERATOR_PREFIX = PREFIX + "code_generator.";
 
     private static final String CODE_GENERATOR_LANGUAGES = CODE_GENERATOR_PREFIX + "languages";
 
