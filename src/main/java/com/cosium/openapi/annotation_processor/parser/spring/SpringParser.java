@@ -60,7 +60,7 @@ class SpringParser implements PathParser {
                                 .stream()
                                 .peek(pathTemplate -> LOG.debug("Extracted path template '{}'", pathTemplate))
                                 .forEach(pathTemplate -> {
-                                            methodsByPathTemplate.putIfAbsent(pathTemplate, new ArrayList<>());
+                                            methodsByPathTemplate.computeIfAbsent(pathTemplate, pt -> new ArrayList<>());
                                             methodsByPathTemplate.get(pathTemplate).add(executableElement);
                                         })
                 );
