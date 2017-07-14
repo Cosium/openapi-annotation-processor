@@ -10,6 +10,8 @@ import io.swagger.models.Response;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
+import io.swagger.models.properties.ObjectProperty;
+import io.swagger.models.properties.Property;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -131,13 +133,14 @@ class SpringParser implements PathParser {
         BodyParameter bodyParameter = new BodyParameter();
         bodyParameter.setName(variableElement.getSimpleName().toString());
         bodyParameter.setRequired(true);
-        bodyParameter.setSchema(new ModelImpl());
+        bodyParameter.setSchema(new ModelImpl().type(ModelImpl.OBJECT));
         return bodyParameter;
     }
 
     private PathParameter buildPathParameter(VariableElement variableElement, PathVariable pathVariable) {
         return new PathParameter()
                 .name(pathVariable.value())
+                .required(true)
                 .property(propertyUtils.from(variableElement));
     }
 
