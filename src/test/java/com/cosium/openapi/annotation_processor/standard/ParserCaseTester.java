@@ -100,7 +100,7 @@ public class ParserCaseTester {
         }
 
         List<String> options = new ArrayList<>();
-        properties.forEach((key, value) -> options.add("-A" + key + "=\"" + value + "\""));
+        properties.forEach((key, value) -> options.add("-A" + key + "=" + value));
         return options;
     }
 

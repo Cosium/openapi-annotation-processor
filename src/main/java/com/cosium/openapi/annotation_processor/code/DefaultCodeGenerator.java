@@ -5,6 +5,8 @@ import io.swagger.codegen.*;
 import io.swagger.models.Swagger;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.tools.FileObject;
 import java.io.File;
@@ -15,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 /**
  * Created on 12/07/17.
@@ -22,6 +25,8 @@ import static java.util.Objects.requireNonNull;
  * @author Reda.Housni-Alaoui
  */
 public class DefaultCodeGenerator implements CodeGenerator {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultCodeGenerator.class);
 
     private final ICodeGeneratorOptions options;
     private final FileManager fileManager;
@@ -42,6 +47,7 @@ public class DefaultCodeGenerator implements CodeGenerator {
         Path mainPath;
         try {
             mainPath = Files.createTempDirectory(language);
+            LOG.debug("Using output dir {}", mainPath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -64,8 +70,15 @@ public class DefaultCodeGenerator implements CodeGenerator {
     }
 
     private void writeFile(Path mainPath, Path file) {
-        Path relativePath = file.relativize(mainPath);
-        String packageName = StringUtils.replace(relativePath.toString(), File.pathSeparator, ".");
+        LOG.debug("Writing file {} relatively to {}", file, mainPath);
+        Path relativePath = mainPath.relativize(file).getParent();
+
+        String packageName = ofNullable(relativePath)
+                .map(path -> StringUtils.replace(path.toString(), File.pathSeparator, "."))
+                .orElse(StringUtils.EMPTY);
+
+        LOG.debug("Computed package name '{}'", packageName);
+
         FileObject fileObject = fileManager.createResource(packageName, file.getFileName().toString());
         try (Writer writer = fileObject.openWriter(); Reader reader = Files.newBufferedReader(file)) {
             IOUtils.copy(reader, writer);
