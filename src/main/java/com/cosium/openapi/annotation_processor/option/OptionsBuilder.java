@@ -25,7 +25,7 @@ public class OptionsBuilder {
 
     private static final String BASE_GENERATION_PACKAGE = PREFIX + "generation_package";
 
-    private static final String SPECIFICATION_GENERATOR_PREFIX = PREFIX + "documentation_generator.";
+    private static final String SPECIFICATION_GENERATOR_PREFIX = PREFIX + "specification_generator.";
 
     private static final String SPECIFICATION_GENERATOR_BASE_PATH_OPTION = SPECIFICATION_GENERATOR_PREFIX + "base_path";
     private static final String SPECIFICATION_GENERATOR_PRODUCES_OPTION = SPECIFICATION_GENERATOR_PREFIX + "produces";
