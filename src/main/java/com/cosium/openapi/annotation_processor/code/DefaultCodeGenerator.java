@@ -1,7 +1,11 @@
 package com.cosium.openapi.annotation_processor.code;
 
 import com.cosium.openapi.annotation_processor.FileManager;
-import io.swagger.codegen.*;
+import com.cosium.openapi.annotation_processor.loader.ServiceLoader;
+import io.swagger.codegen.ClientOptInput;
+import io.swagger.codegen.ClientOpts;
+import io.swagger.codegen.CodegenConfig;
+import io.swagger.codegen.DefaultGenerator;
 import io.swagger.models.Swagger;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,12 +33,15 @@ public class DefaultCodeGenerator implements CodeGenerator {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultCodeGenerator.class);
 
     private final ICodeGeneratorOptions options;
+    private final ServiceLoader serviceLoader;
     private final FileManager fileManager;
 
-    public DefaultCodeGenerator(ICodeGeneratorOptions options, FileManager fileManager) {
+    public DefaultCodeGenerator(ICodeGeneratorOptions options, ServiceLoader serviceLoader, FileManager fileManager) {
         requireNonNull(options);
+        requireNonNull(serviceLoader);
         requireNonNull(fileManager);
         this.options = options;
+        this.serviceLoader = serviceLoader;
         this.fileManager = fileManager;
     }
 
@@ -52,7 +59,13 @@ public class DefaultCodeGenerator implements CodeGenerator {
             throw new RuntimeException(e);
         }
 
-        CodegenConfig codegenConfig = CodegenConfigLoader.forName(language);
+        CodegenConfig codegenConfig = serviceLoader
+                .load(CodegenConfig.class)
+                .stream()
+                .filter(config -> config.getName().equals(language))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Could not find codegen configuration for language " + language));
+
         codegenConfig.setOutputDir(mainPath.toString());
 
         ClientOptInput clientOptInput = new ClientOptInput();
@@ -61,7 +74,6 @@ public class DefaultCodeGenerator implements CodeGenerator {
                 .opts(clientOpts)
                 .config(codegenConfig)
                 .swagger(swagger);
-
 
         new DefaultGenerator()
                 .opts(clientOptInput)

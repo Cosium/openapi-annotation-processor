@@ -2,6 +2,8 @@ package com.cosium.openapi.annotation_processor;
 
 import com.cosium.openapi.annotation_processor.code.CodeGenerator;
 import com.cosium.openapi.annotation_processor.code.DefaultCodeGenerator;
+import com.cosium.openapi.annotation_processor.loader.DefaultServiceLoader;
+import com.cosium.openapi.annotation_processor.loader.ServiceLoader;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import com.cosium.openapi.annotation_processor.option.IOptions;
 import com.cosium.openapi.annotation_processor.option.OptionsBuilder;
@@ -42,6 +44,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
 
     private final List<PathParserFactory> parserFactories = new ArrayList<>();
     private final OptionsBuilder optionsBuilder = new OptionsBuilder();
+    private final ServiceLoader serviceLoader = new DefaultServiceLoader();
 
     private Types typeUtils;
     private Elements elementUtils;
@@ -82,6 +85,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
         );
         this.codeGenerator = new DefaultCodeGenerator(
                 options.codeGenerator(),
+                serviceLoader,
                 new DefaultFileManager(options.baseGenerationPackage() + ".generated.code", filer)
         );
     }
