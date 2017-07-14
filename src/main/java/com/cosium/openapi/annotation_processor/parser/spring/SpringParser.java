@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 12/07/17.
@@ -34,8 +35,9 @@ class SpringParser implements PathParser {
 
     private final PropertyUtils propertyUtils;
 
-    SpringParser() {
-        this.propertyUtils = new PropertyUtils();
+    SpringParser(PropertyUtils propertyUtils) {
+        requireNonNull(propertyUtils);
+        this.propertyUtils = propertyUtils;
     }
 
     @Override
@@ -120,7 +122,7 @@ class SpringParser implements PathParser {
         }
         PathVariable pathVariable = variableElement.getAnnotation(PathVariable.class);
         if (pathVariable != null) {
-            return Optional.of(buildPathParameter(pathVariable.value()));
+            return Optional.of(buildPathParameter(variableElement, pathVariable));
         }
         return Optional.empty();
     }
@@ -133,10 +135,10 @@ class SpringParser implements PathParser {
         return bodyParameter;
     }
 
-    private PathParameter buildPathParameter(String template) {
-        PathParameter pathParameter = new PathParameter();
-        pathParameter.setName(template);
-        return pathParameter;
+    private PathParameter buildPathParameter(VariableElement variableElement, PathVariable pathVariable) {
+        return new PathParameter()
+                .name(pathVariable.value())
+                .property(propertyUtils.from(variableElement));
     }
 
     private Set<String> getPathTemplates(RequestMapping requestMapping) {

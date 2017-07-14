@@ -3,7 +3,15 @@ package com.cosium.openapi.annotation_processor.parser.utils;
 
 import io.swagger.models.properties.*;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
+import java.io.File;
+import java.util.Date;
+import java.util.UUID;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 12/07/17.
@@ -12,12 +20,24 @@ import javax.lang.model.type.TypeMirror;
  */
 public class PropertyUtils {
 
-    public PropertyUtils() {
+    private final Types typeUtils;
+    private final Elements elementUtils;
+
+    public PropertyUtils(Types typeUtils, Elements elementUtils) {
+        requireNonNull(typeUtils);
+        requireNonNull(elementUtils);
+
+        this.typeUtils = typeUtils;
+        this.elementUtils = elementUtils;
     }
 
-    public Property from(TypeMirror typeMirror) {
+    public Property from(Element element) {
+        return from(element.asType());
+    }
+
+    public Property from(TypeMirror type) {
         Property property;
-        switch (typeMirror.getKind()) {
+        switch (type.getKind()) {
             case BOOLEAN:
                 property = new BooleanProperty();
                 break;
@@ -44,7 +64,23 @@ public class PropertyUtils {
                 break;
         }
 
+        if (property instanceof ObjectProperty) {
+            if (isSubtype(type, String.class)) {
+                property = new StringProperty();
+            } else if (isSubtype(type, Date.class)) {
+                property = new DateProperty();
+            } else if (isSubtype(type, UUID.class)) {
+                property = new UUIDProperty();
+            } else if (isSubtype(type, File.class)) {
+                property = new FileProperty();
+            }
+        }
+
         return property;
+    }
+
+    private boolean isSubtype(TypeMirror t1, Class<?> t2) {
+        return typeUtils.isSubtype(t1, elementUtils.getTypeElement(t2.getCanonicalName()).asType());
     }
 
 }
