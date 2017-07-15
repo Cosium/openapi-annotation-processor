@@ -50,7 +50,7 @@ public class OptionsBuilder {
     public IOptions build(Map<String, String> options) {
         return Options
                 .builder()
-                .baseGenerationPackage(options.getOrDefault(BASE_GENERATION_PACKAGE, "com.cosium.openapi"))
+                .baseGenerationPackage(options.getOrDefault(BASE_GENERATION_PACKAGE, "com.cosium.openapi.generated"))
                 .specificationGenerator(buildSpecificationGenerator(options))
                 .codeGenerator(buildCodeGenerator(options))
                 .build();

@@ -12,7 +12,7 @@ Add the maven dependency:
 <dependency>
     <groupId>com.cosium.openapi</groupId>
     <artifactId>openapi-annotation-processor</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -37,7 +37,7 @@ All generated files will be available in the classes output folder.
 ### Options
 ##### Generation package
 - Key: `com.cosium.openapi.generation_package`
-- Default value: `com.cosium.openapi`
+- Default value: `com.cosium.openapi.generated`
 - Description: The package where generated files will be written
 ##### Specification base path
 - Key: `com.cosium.openapi.specification_generator.base_path`

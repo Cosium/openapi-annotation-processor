@@ -86,12 +86,12 @@ public class OpenAPIProcessor extends AbstractProcessor {
         IOptions options = optionsBuilder.build(processingEnv.getOptions());
         this.specificationGenerator = new DefaultSpecificationGenerator(
                 options.specificationGenerator(),
-                new DefaultFileManager(options.baseGenerationPackage() + ".generated.specification", filer)
+                new DefaultFileManager(options.baseGenerationPackage() + ".specification", filer)
         );
         this.codeGenerator = new DefaultCodeGenerator(
                 options.codeGenerator(),
                 serviceLoader,
-                new DefaultFileManager(options.baseGenerationPackage() + ".generated.code", filer)
+                new DefaultFileManager(options.baseGenerationPackage() + ".code", filer)
         );
     }
 
