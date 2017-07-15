@@ -78,16 +78,18 @@ public class DefaultCodeGenerator implements CodeGenerator {
         new DefaultGenerator()
                 .opts(clientOptInput)
                 .generate()
-                .forEach(file -> writeFile(mainPath, file.toPath()));
+                .forEach(file -> writeFile(language, mainPath, file.toPath()));
     }
 
-    private void writeFile(Path mainPath, Path file) {
+    private void writeFile(String packageRoot, Path mainPath, Path file) {
         LOG.debug("Writing file {} relatively to {}", file, mainPath);
         Path relativePath = mainPath.relativize(file).getParent();
 
         String packageName = ofNullable(relativePath)
                 .map(path -> StringUtils.replace(path.toString(), File.pathSeparator, "."))
-                .orElse(StringUtils.EMPTY);
+                .map(s -> packageRoot + "." + s)
+                .orElse(packageRoot);
+        packageName = StringUtils.replace(packageName, "-", "_");
 
         LOG.debug("Computed package name '{}'", packageName);
 
