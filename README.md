@@ -3,6 +3,9 @@ The OpenAPI annotation processor parses Java source code and generates OpenAPI s
 
 It currently supports `Spring MVC` and `Swagger 2.0`.
 
+### Why an annotation processor instead of a maven plugin?
+Because it is natively supported by `javac`. Therefore, it will make your development workflow smoother. 
+
 ### How to use it
 Add the maven dependency:
 ```xml
