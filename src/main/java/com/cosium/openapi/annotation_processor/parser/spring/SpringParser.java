@@ -3,6 +3,7 @@ package com.cosium.openapi.annotation_processor.parser.spring;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import com.cosium.openapi.annotation_processor.parser.PathParser;
 import com.cosium.openapi.annotation_processor.parser.utils.PropertyUtils;
+import io.swagger.annotations.Api;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
@@ -10,8 +11,7 @@ import io.swagger.models.Response;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
-import io.swagger.models.properties.ObjectProperty;
-import io.swagger.models.properties.Property;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 /**
  * Created on 12/07/17.
@@ -64,9 +65,9 @@ class SpringParser implements PathParser {
                                 .stream()
                                 .peek(pathTemplate -> LOG.debug("Extracted path template '{}'", pathTemplate))
                                 .forEach(pathTemplate -> {
-                                            methodsByPathTemplate.computeIfAbsent(pathTemplate, pt -> new ArrayList<>());
-                                            methodsByPathTemplate.get(pathTemplate).add(executableElement);
-                                        })
+                                    methodsByPathTemplate.computeIfAbsent(pathTemplate, pt -> new ArrayList<>());
+                                    methodsByPathTemplate.get(pathTemplate).add(executableElement);
+                                })
                 );
 
         LOG.debug("Found methods by template {}", methodsByPathTemplate);
@@ -103,7 +104,12 @@ class SpringParser implements PathParser {
     private Operation buildOperation(ExecutableElement executableElement) {
         Operation operation = new Operation();
         operation.setOperationId(executableElement.getSimpleName().toString());
-        operation.tag(executableElement.getEnclosingElement().getSimpleName().toString());
+
+        Element controller = executableElement.getEnclosingElement();
+        Optional<Api> apiAnnotation = ofNullable(controller.getAnnotation(Api.class));
+        apiAnnotation.ifPresent(annotation -> Stream.of(annotation.tags())
+                        .filter(StringUtils::isNotBlank)
+                        .forEach(operation::addTag));
 
         executableElement.getParameters()
                 .stream()

@@ -6,7 +6,7 @@
   "paths" : {
     "/foo/hello" : {
       "get" : {
-        "tags" : [ "Controller" ],
+        "tags" : [ "foo" ],
         "operationId" : "hello",
         "parameters" : [ ],
         "responses" : {
