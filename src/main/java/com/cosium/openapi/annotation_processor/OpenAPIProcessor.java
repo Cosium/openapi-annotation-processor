@@ -50,6 +50,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
     private Elements elementUtils;
     private Messager messager;
 
+    private List<ParserHolder> pathParsers;
     private SpecificationGenerator specificationGenerator;
     private CodeGenerator codeGenerator;
 
@@ -77,6 +78,10 @@ public class OpenAPIProcessor extends AbstractProcessor {
         this.elementUtils = processingEnv.getElementUtils();
         this.messager = processingEnv.getMessager();
 
+        this.pathParsers = parserFactories
+                .stream()
+                .map(ParserHolder::new)
+                .collect(Collectors.toList());
         Filer filer = processingEnv.getFiler();
         IOptions options = optionsBuilder.build(processingEnv.getOptions());
         this.specificationGenerator = new DefaultSpecificationGenerator(
@@ -109,9 +114,8 @@ public class OpenAPIProcessor extends AbstractProcessor {
     }
 
     private void doProcess(RoundEnvironment roundEnv, AtomicReference<Element> currentAnnotatedElement, boolean lastRound) {
-        List<ParsedPath> parsedPaths = parserFactories
+        List<ParsedPath> parsedPaths = pathParsers
                 .stream()
-                .map(ParserHolder::new)
                 .flatMap(parserHolder -> {
                     TypeElement annotation = elementUtils.getTypeElement(parserHolder.getSupportedAnnotation());
                     PathParser pathParser = parserHolder.getPathParser();

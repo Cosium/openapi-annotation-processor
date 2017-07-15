@@ -103,6 +103,7 @@ class SpringParser implements PathParser {
     private Operation buildOperation(ExecutableElement executableElement) {
         Operation operation = new Operation();
         operation.setOperationId(executableElement.getSimpleName().toString());
+        operation.tag(executableElement.getEnclosingElement().getSimpleName().toString());
 
         executableElement.getParameters()
                 .stream()

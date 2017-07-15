@@ -8,6 +8,8 @@ produces:
 paths:
   /foo/hello:
     get:
+      tags:
+      - "Controller"
       operationId: "hello"
       parameters: []
       responses:
