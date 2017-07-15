@@ -1,5 +1,6 @@
 # OpenAPI Annotation Processor
 The OpenAPI annotation processor parses Java source code and generates OpenAPI specification and optionally related code.
+
 It currently supports `Spring MVC` and `Swagger 2.0`.
 
 ### How to use it
