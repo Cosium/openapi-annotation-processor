@@ -61,6 +61,7 @@ The processor calls the following components:
 
 ##### Path parser
 `PathParser` takes Java source code as input and returns a list of Swagger 2.0 API paths.
+
 The following parsers are available out of the box:
 - `SpringParser` which parses your Spring MVC controllers
 
@@ -68,10 +69,12 @@ More parsers are expected to be added over time (JAX-RS, Servlet, ...)
 
 ##### Specification generator
 `SpecificationGenerator` takes a list of Swagger 2.0 API paths as input and generates a full Swagger 2.0 specification.
+
 `DefaultSpecificationGenerator` takes care of this task. 
 This generator should remain the only implementation until Swagger 3.0 specification.
 
 ##### Code generator
 `CodeGenerator` takes a full Swagger 2.0 specification as input and generates related code.
+
 `DefaultCodeGenerator` takes care of this task. It uses [swagger-codegen](https://github.com/swagger-api/swagger-codegen).
 This generator should remain the only implementation until Swagger 3.0 specification.
