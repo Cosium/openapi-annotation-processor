@@ -8,9 +8,9 @@ Add the maven dependency:
 ```xml
 <dependency>
     <groupId>com.cosium.openapi</groupId>
-	<artifactId>openapi-annotation-processor</artifactId>
-	<version>1.0</version>
-	<scope>provided</scope>
+    <artifactId>openapi-annotation-processor</artifactId>
+    <version>1.0</version>
+    <scope>provided</scope>
 </dependency>
 ```
 Options can be passed to the annotation processor like this:
