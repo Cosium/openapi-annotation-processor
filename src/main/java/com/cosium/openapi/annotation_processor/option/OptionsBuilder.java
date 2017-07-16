@@ -27,6 +27,7 @@ public class OptionsBuilder {
 
     private static final String SPECIFICATION_GENERATOR_PREFIX = PREFIX + "specification_generator.";
 
+    private static final String SPECIFICATION_GENERATOR_TITLE_OPTION = SPECIFICATION_GENERATOR_PREFIX + "title";
     private static final String SPECIFICATION_GENERATOR_BASE_PATH_OPTION = SPECIFICATION_GENERATOR_PREFIX + "base_path";
     private static final String SPECIFICATION_GENERATOR_PRODUCES_OPTION = SPECIFICATION_GENERATOR_PREFIX + "produces";
     private static final String SPECIFICATION_GENERATOR_CONSUMES_OPTION = SPECIFICATION_GENERATOR_PREFIX + "consumes";
@@ -40,6 +41,7 @@ public class OptionsBuilder {
     public Set<String> getSupportedOptions() {
         return new LinkedHashSet<>(Arrays.asList(
                 BASE_GENERATION_PACKAGE,
+                SPECIFICATION_GENERATOR_TITLE_OPTION,
                 SPECIFICATION_GENERATOR_BASE_PATH_OPTION,
                 SPECIFICATION_GENERATOR_PRODUCES_OPTION,
                 SPECIFICATION_GENERATOR_CONSUMES_OPTION,
@@ -59,6 +61,7 @@ public class OptionsBuilder {
     private ISpecificationGeneratorOptions buildSpecificationGenerator(Map<String, String> options) {
         SpecificationGeneratorOptions.BuildFinal documentatorOptionsBuilder = SpecificationGeneratorOptions
                 .builder()
+                .title(options.getOrDefault(SPECIFICATION_GENERATOR_TITLE_OPTION, StringUtils.EMPTY))
                 .basePath(options.getOrDefault(SPECIFICATION_GENERATOR_BASE_PATH_OPTION, "/"));
 
         Stream.of(StringUtils

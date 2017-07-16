@@ -3,6 +3,7 @@ package com.cosium.openapi.annotation_processor.specification;
 import com.cosium.openapi.annotation_processor.FileManager;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import io.swagger.models.Info;
 import io.swagger.models.Swagger;
 import io.swagger.util.Json;
 import io.swagger.util.Yaml;
@@ -43,10 +44,11 @@ public class DefaultSpecificationGenerator implements SpecificationGenerator {
     public Swagger generate(List<ParsedPath> parsedPaths, boolean lastRound) {
         LOG.debug("Generating specification for {}", parsedPaths);
 
-        Swagger swagger = cache.updateAndGet(spec -> ofNullable(spec).orElseGet(Swagger::new));
-        swagger.basePath(options.basePath());
-        swagger.produces(options.produces());
-        swagger.consumes(options.consumes());
+        Swagger swagger = cache.updateAndGet(spec -> ofNullable(spec).orElseGet(Swagger::new))
+                .info(new Info().title(options.title()))
+                .basePath(options.basePath())
+                .produces(options.produces())
+                .consumes(options.consumes());
         parsedPaths.forEach(parsedPath -> swagger.path(parsedPath.getPathTemplate(), parsedPath.getPath()));
 
         if (lastRound) {

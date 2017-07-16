@@ -13,6 +13,11 @@ import java.util.List;
 public interface ISpecificationGeneratorOptions {
 
     /**
+     * @return The title of the specification
+     */
+    String title();
+
+    /**
      * @return The specification base path
      */
     String basePath();

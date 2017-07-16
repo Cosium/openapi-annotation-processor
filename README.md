@@ -39,6 +39,10 @@ All generated files will be available in the classes output folder.
 - Key: `com.cosium.openapi.generation_package`
 - Default value: `com.cosium.openapi.generated`
 - Description: The package where generated files will be written
+##### Specification title
+- Key: `com.cosium.openapi.specification_generator.title`
+- Default value: ``
+- Description: The OpenAPI title
 ##### Specification base path
 - Key: `com.cosium.openapi.specification_generator.base_path`
 - Default value: `/`
