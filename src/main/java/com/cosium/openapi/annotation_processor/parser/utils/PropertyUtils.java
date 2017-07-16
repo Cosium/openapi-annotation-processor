@@ -8,12 +8,10 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.io.File;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 /**
  * Created on 12/07/17.
@@ -21,6 +19,17 @@ import static java.util.Objects.requireNonNull;
  * @author Reda.Housni-Alaoui
  */
 public class PropertyUtils {
+
+    private static final List<Class<? extends Property>> SIMPLE_PROPERTIES = Arrays.asList(
+            BooleanProperty.class,
+            IntegerProperty.class,
+            LongProperty.class,
+            FloatProperty.class,
+            DoubleProperty.class,
+            DateProperty.class,
+            UUIDProperty.class,
+            StringProperty.class
+    );
 
     private final Types typeUtils;
     private final Elements elementUtils;
@@ -33,11 +42,17 @@ public class PropertyUtils {
         this.elementUtils = elementUtils;
     }
 
-    public Property from(Element element) {
-        return from(element.asType());
+    public Property toSimpleProperty(Element element){
+        return ofNullable(toProperty(element))
+                .filter(property -> SIMPLE_PROPERTIES.contains(property.getClass()))
+                .orElseGet(StringProperty::new);
     }
 
-    public Property from(TypeMirror type) {
+    public Property toProperty(Element element) {
+        return toProperty(element.asType());
+    }
+
+    public Property toProperty(TypeMirror type) {
         Property property;
         switch (type.getKind()) {
             case BOOLEAN:

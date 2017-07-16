@@ -11,6 +11,9 @@ import io.swagger.models.Response;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
+import io.swagger.models.properties.ObjectProperty;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.StringProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,8 +111,8 @@ class SpringParser implements PathParser {
         Element controller = executableElement.getEnclosingElement();
         Optional<Api> apiAnnotation = ofNullable(controller.getAnnotation(Api.class));
         apiAnnotation.ifPresent(annotation -> Stream.of(annotation.tags())
-                        .filter(StringUtils::isNotBlank)
-                        .forEach(operation::addTag));
+                .filter(StringUtils::isNotBlank)
+                .forEach(operation::addTag));
 
         executableElement.getParameters()
                 .stream()
@@ -119,7 +122,7 @@ class SpringParser implements PathParser {
                 .forEach(operation::addParameter);
 
         Response okResponse = new Response();
-        okResponse.schema(propertyUtils.from(executableElement.getReturnType()));
+        okResponse.schema(propertyUtils.toProperty(executableElement.getReturnType()));
         operation.response(200, okResponse);
 
         return operation;
@@ -145,10 +148,13 @@ class SpringParser implements PathParser {
     }
 
     private PathParameter buildPathParameter(VariableElement variableElement, PathVariable pathVariable) {
+        Property property = ofNullable(propertyUtils.toSimpleProperty(variableElement))
+                .filter(prop -> !(prop instanceof ObjectProperty))
+                .orElseGet(StringProperty::new);
         return new PathParameter()
                 .name(pathVariable.value())
                 .required(true)
-                .property(propertyUtils.from(variableElement));
+                .property(property);
     }
 
     private Set<String> getPathTemplates(RequestMapping requestMapping) {
