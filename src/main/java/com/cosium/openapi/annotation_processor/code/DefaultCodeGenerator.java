@@ -75,7 +75,7 @@ public class DefaultCodeGenerator implements CodeGenerator {
         new DefaultGenerator()
                 .opts(clientOptInput)
                 .generate()
-                .forEach(file -> writeFile(language, mainPath, file.toPath()));
+                .forEach(file -> writeFile(codegenConfig.getName(), mainPath, file.toPath()));
     }
 
     /**
