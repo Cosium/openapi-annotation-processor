@@ -79,6 +79,19 @@ public class PropertyUtils {
                 property = new ArrayProperty();
             } else if (isSubtype(type, Map.class)) {
                 property = new MapProperty();
+            } else if (isSubtype(type, Boolean.class)) {
+                property = new BooleanProperty();
+            } else if (isSubtype(type, Long.class)) {
+                property = new LongProperty();
+            } else if (isSubtype(type, Float.class)) {
+                property = new FloatProperty();
+            } else if (isSubtype(type, Double.class)) {
+                property = new DoubleProperty();
+            } else if (isSubtype(type, Short.class)
+                    || isSubtype(type, Integer.class)
+                    || isSubtype(type, Byte.class)
+                    || isSubtype(type, Character.class)) {
+                property = new IntegerProperty();
             }
         }
 
