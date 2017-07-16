@@ -8,7 +8,6 @@ import io.swagger.codegen.CodegenConfig;
 import io.swagger.codegen.DefaultGenerator;
 import io.swagger.models.Swagger;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +18,11 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.replace;
 
 /**
  * Created on 12/07/17.
@@ -59,11 +60,7 @@ public class DefaultCodeGenerator implements CodeGenerator {
             throw new RuntimeException(e);
         }
 
-        CodegenConfig codegenConfig = serviceLoader
-                .load(CodegenConfig.class)
-                .stream()
-                .filter(config -> config.getName().equals(language))
-                .findFirst()
+        CodegenConfig codegenConfig = loadCodegenConfig(language)
                 .orElseThrow(() -> new RuntimeException("Could not find codegen configuration for language " + language));
 
         codegenConfig.setOutputDir(mainPath.toString());
@@ -81,15 +78,40 @@ public class DefaultCodeGenerator implements CodeGenerator {
                 .forEach(file -> writeFile(language, mainPath, file.toPath()));
     }
 
-    private void writeFile(String packageRoot, Path mainPath, Path file) {
+    /**
+     * @param language The language to load config for
+     * @return The loaded codegen config
+     */
+    private Optional<CodegenConfig> loadCodegenConfig(String language) {
+        LOG.debug("Loading codegen config for language {}", language);
+        CodegenConfig codegenConfig = serviceLoader
+                .load(CodegenConfig.class)
+                .stream()
+                .filter(config -> config.getName().equals(language))
+                .findFirst()
+                .orElse(null);
+
+        if (codegenConfig == null) {
+            LOG.debug("No standard codegen config found for language {}. Looking for class {}.", language, language);
+            try {
+                codegenConfig = (CodegenConfig) Class.forName(language).newInstance();
+            } catch (Exception ignored) {
+                LOG.debug("No class found for language {}", language);
+            }
+        }
+
+        return ofNullable(codegenConfig);
+    }
+
+    private void writeFile(String root, Path mainPath, Path file) {
         LOG.debug("Writing file {} relatively to {}", file, mainPath);
         Path relativePath = mainPath.relativize(file).getParent();
 
         String packageName = ofNullable(relativePath)
-                .map(path -> StringUtils.replace(path.toString(), File.pathSeparator, "."))
-                .map(s -> packageRoot + "." + s)
-                .orElse(packageRoot);
-        packageName = StringUtils.replace(packageName, "-", "_");
+                .map(Path::toString)
+                .map(s -> root + "." + s)
+                .orElse(root);
+        packageName = replace(replace(packageName, "-", "_"), File.pathSeparator, ".");
 
         LOG.debug("Computed package name '{}'", packageName);
 
