@@ -2,6 +2,7 @@ package com.cosium.openapi.annotation_processor.parser.spring;
 
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import com.cosium.openapi.annotation_processor.parser.PathParser;
+import com.cosium.openapi.annotation_processor.parser.utils.AnnotationUtils;
 import com.cosium.openapi.annotation_processor.parser.utils.PropertyUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.lang.model.element.*;
+import javax.lang.model.type.TypeKind;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -41,10 +43,13 @@ class SpringParser implements PathParser {
     private static final Logger LOG = LoggerFactory.getLogger(SpringParser.class);
 
     private final PropertyUtils propertyUtils;
+    private final AnnotationUtils annotationUtils;
 
-    SpringParser(PropertyUtils propertyUtils) {
+    SpringParser(PropertyUtils propertyUtils, AnnotationUtils annotationUtils) {
         requireNonNull(propertyUtils);
+        requireNonNull(annotationUtils);
         this.propertyUtils = propertyUtils;
+        this.annotationUtils = annotationUtils;
     }
 
     @Override
@@ -128,8 +133,8 @@ class SpringParser implements PathParser {
 
         Response okResponse = new Response();
         Property returnProperty = ofNullable(executableElement.getAnnotation(ApiOperation.class))
-                .map(ApiOperation::response)
-                .filter(returnType -> !Void.class.isAssignableFrom(returnType))
+                .map(apiOperation -> annotationUtils.extractType(apiOperation, ApiOperation::response))
+                .filter(returnType -> returnType.getKind() != TypeKind.VOID)
                 .map(propertyUtils::toProperty)
                 .orElseGet(() -> propertyUtils.toProperty(executableElement.getReturnType()));
         okResponse.schema(returnProperty);

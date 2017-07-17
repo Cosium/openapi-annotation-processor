@@ -2,6 +2,7 @@ package com.cosium.openapi.annotation_processor.parser.spring;
 
 import com.cosium.openapi.annotation_processor.parser.PathParser;
 import com.cosium.openapi.annotation_processor.parser.PathParserFactory;
+import com.cosium.openapi.annotation_processor.parser.utils.AnnotationUtils;
 import com.cosium.openapi.annotation_processor.parser.utils.PropertyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -22,6 +23,6 @@ public class SpringParserFactory implements PathParserFactory {
 
     @Override
     public PathParser build(Types typeUtils, Elements elementUtils) {
-        return new SpringParser(new PropertyUtils(typeUtils, elementUtils));
+        return new SpringParser(new PropertyUtils(typeUtils, elementUtils), new AnnotationUtils(typeUtils));
     }
 }
