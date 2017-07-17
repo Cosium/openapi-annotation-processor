@@ -127,7 +127,12 @@ class SpringParser implements PathParser {
                 .forEach(operation::addParameter);
 
         Response okResponse = new Response();
-        okResponse.schema(propertyUtils.toProperty(executableElement.getReturnType()));
+        Property returnProperty = ofNullable(executableElement.getAnnotation(ApiOperation.class))
+                .map(ApiOperation::response)
+                .filter(returnType -> !Void.class.isAssignableFrom(returnType))
+                .map(propertyUtils::toProperty)
+                .orElseGet(() -> propertyUtils.toProperty(executableElement.getReturnType()));
+        okResponse.schema(returnProperty);
         operation.response(200, okResponse);
 
         return operation;

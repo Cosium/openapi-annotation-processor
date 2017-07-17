@@ -42,10 +42,14 @@ public class PropertyUtils {
         this.elementUtils = elementUtils;
     }
 
-    public Property toSimpleProperty(Element element){
+    public Property toSimpleProperty(Element element) {
         return ofNullable(toProperty(element))
                 .filter(property -> SIMPLE_PROPERTIES.contains(property.getClass()))
                 .orElseGet(StringProperty::new);
+    }
+
+    public Property toProperty(Class<?> clazz) {
+        return toProperty(elementUtils.getTypeElement(clazz.getCanonicalName()));
     }
 
     public Property toProperty(Element element) {
