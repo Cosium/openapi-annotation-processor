@@ -4,6 +4,7 @@ import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import com.cosium.openapi.annotation_processor.parser.PathParser;
 import com.cosium.openapi.annotation_processor.parser.utils.PropertyUtils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
@@ -106,7 +107,11 @@ class SpringParser implements PathParser {
 
     private Operation buildOperation(ExecutableElement executableElement) {
         Operation operation = new Operation();
-        operation.setOperationId(executableElement.getSimpleName().toString());
+        String operationId = ofNullable(executableElement.getAnnotation(ApiOperation.class))
+                .map(ApiOperation::nickname)
+                .filter(StringUtils::isNotBlank)
+                .orElse(executableElement.getSimpleName().toString());
+        operation.setOperationId(operationId);
 
         Element controller = executableElement.getEnclosingElement();
         Optional<Api> apiAnnotation = ofNullable(controller.getAnnotation(Api.class));
