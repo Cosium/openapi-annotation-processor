@@ -117,6 +117,9 @@ public class PropertyUtils {
         if (property instanceof ArrayProperty) {
             ArrayProperty arrayProperty = (ArrayProperty) property;
             arrayProperty.setItems(new ObjectProperty());
+        } else if(property instanceof MapProperty){
+            MapProperty mapProperty = (MapProperty) property;
+            mapProperty.setAdditionalProperties(new ObjectProperty());
         }
 
         return property;
