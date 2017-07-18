@@ -123,7 +123,10 @@ public class PropertyUtils {
     }
 
     private boolean isSubtype(TypeMirror t1, Class<?> t2) {
-        return typeUtils.isSubtype(t1, elementUtils.getTypeElement(t2.getCanonicalName()).asType());
+        return typeUtils.isSubtype(
+                typeUtils.erasure(t1),
+                typeUtils.erasure(elementUtils.getTypeElement(t2.getCanonicalName()).asType())
+        );
     }
 
 }
