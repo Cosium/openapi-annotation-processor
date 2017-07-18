@@ -13,6 +13,11 @@ import java.util.List;
 public interface ICodeGeneratorOptions {
 
     /**
+     * @return True if each language code should be written in a separate folder named as the language
+     */
+    boolean oneGenerationFolderPerLanguage();
+
+    /**
      * @return Languages for which generation should occur
      */
     List<String> languages();

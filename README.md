@@ -12,7 +12,7 @@ Add the maven dependency:
 <dependency>
     <groupId>com.cosium.openapi</groupId>
     <artifactId>openapi-annotation-processor</artifactId>
-    <version>1.3</version>
+    <version>1.4</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -59,6 +59,10 @@ All generated files will be available in the classes output folder.
 - Key: `com.cosium.openapi.code_generator.languages`
 - Example of value: `typescript-angular,typescript-angular2`
 - Description: The languages to use to generate OpenAPI related code
+##### One code generation folder per language
+- Key: `com.cosium.openapi.code_generator.one_generation_folder_per_language`
+- Default: `true`
+- Description: True if each language code should be written in a separate folder named as the language. False to put all languages in the same folder.
 
 ### Architecture
 The processor calls the following components:

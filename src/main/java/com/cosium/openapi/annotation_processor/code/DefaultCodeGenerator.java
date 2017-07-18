@@ -8,6 +8,7 @@ import io.swagger.codegen.CodegenConfig;
 import io.swagger.codegen.DefaultGenerator;
 import io.swagger.models.Swagger;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,10 +73,12 @@ public class DefaultCodeGenerator implements CodeGenerator {
                 .config(codegenConfig)
                 .swagger(swagger);
 
+        String root = options.oneGenerationFolderPerLanguage() ? codegenConfig.getName() : StringUtils.EMPTY;
+
         new DefaultGenerator()
                 .opts(clientOptInput)
                 .generate()
-                .forEach(file -> writeFile(codegenConfig.getName(), mainPath, file.toPath()));
+                .forEach(file -> writeFile(root, mainPath, file.toPath()));
     }
 
     /**
@@ -109,7 +112,7 @@ public class DefaultCodeGenerator implements CodeGenerator {
 
         String packageName = ofNullable(relativePath)
                 .map(Path::toString)
-                .map(s -> root + "." + s)
+                .map(s -> prefixPackage(root, s))
                 .orElse(root);
         packageName = replace(replace(packageName, "-", "_"), File.pathSeparator, ".");
 
@@ -121,6 +124,16 @@ public class DefaultCodeGenerator implements CodeGenerator {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String prefixPackage(String prefix, String packageToPrefix) {
+        if (StringUtils.isBlank(packageToPrefix)) {
+            return prefix;
+        }
+        return ofNullable(prefix)
+                .filter(StringUtils::isNotBlank)
+                .map(s -> s + "." + packageToPrefix)
+                .orElse(packageToPrefix);
     }
 
 }

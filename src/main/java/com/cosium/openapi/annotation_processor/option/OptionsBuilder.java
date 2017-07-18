@@ -34,7 +34,8 @@ public class OptionsBuilder {
 
     private static final String CODE_GENERATOR_PREFIX = PREFIX + "code_generator.";
 
-    private static final String CODE_GENERATOR_LANGUAGES = CODE_GENERATOR_PREFIX + "languages";
+    private static final String CODE_GENERATOR_LANGUAGES_OPTIONS = CODE_GENERATOR_PREFIX + "languages";
+    private static final String CODE_GENERATOR_ONE_GENERATION_FOLDER_PER_LANGUAGE_OPTIONS = CODE_GENERATOR_PREFIX + "one_generation_folder_per_language";
 
     private static final String APPLICATION_JSON = "application/json";
 
@@ -45,7 +46,8 @@ public class OptionsBuilder {
                 SPECIFICATION_GENERATOR_BASE_PATH_OPTION,
                 SPECIFICATION_GENERATOR_PRODUCES_OPTION,
                 SPECIFICATION_GENERATOR_CONSUMES_OPTION,
-                CODE_GENERATOR_LANGUAGES
+                CODE_GENERATOR_LANGUAGES_OPTIONS,
+                CODE_GENERATOR_ONE_GENERATION_FOLDER_PER_LANGUAGE_OPTIONS
         ));
     }
 
@@ -74,9 +76,12 @@ public class OptionsBuilder {
     }
 
     private ICodeGeneratorOptions buildCodeGenerator(Map<String, String> options) {
-        CodeGeneratorOptions.Builder builder = CodeGeneratorOptions.builder();
+        CodeGeneratorOptions.BuildFinal builder = CodeGeneratorOptions.builder()
+                .oneGenerationFolderPerLanguage(Boolean.valueOf(
+                        options.getOrDefault(CODE_GENERATOR_ONE_GENERATION_FOLDER_PER_LANGUAGE_OPTIONS, String.valueOf(true))
+                ));
 
-        ofNullable(options.get(CODE_GENERATOR_LANGUAGES))
+        ofNullable(options.get(CODE_GENERATOR_LANGUAGES_OPTIONS))
                 .filter(StringUtils::isNotBlank)
                 .map(s -> StringUtils.split(s, ","))
                 .ifPresent(builder::addLanguages);
