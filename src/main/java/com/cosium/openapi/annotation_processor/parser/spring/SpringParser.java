@@ -175,8 +175,10 @@ class SpringParser implements PathParser {
     private Set<String> getPathTemplates(RequestMapping requestMapping) {
         if (requestMapping.value().length > 0) {
             return new HashSet<>(Arrays.asList(requestMapping.value()));
-        } else {
+        } else if(requestMapping.path().length > 0){
             return new HashSet<>(Arrays.asList(requestMapping.path()));
+        } else{
+            return Collections.singleton(StringUtils.EMPTY);
         }
     }
 
