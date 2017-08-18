@@ -1,7 +1,9 @@
 package com.cosium.openapi.annotation_processor;
 
 import com.cosium.openapi.annotation_processor.code.CodeGenerator;
-import com.cosium.openapi.annotation_processor.code.DefaultCodeGenerator;
+import com.cosium.openapi.annotation_processor.code.CodeGeneratorFactory;
+import com.cosium.openapi.annotation_processor.file.FileManager;
+import com.cosium.openapi.annotation_processor.file.FileManagerFactory;
 import com.cosium.openapi.annotation_processor.loader.DefaultServiceLoader;
 import com.cosium.openapi.annotation_processor.loader.ServiceLoader;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
@@ -10,8 +12,8 @@ import com.cosium.openapi.annotation_processor.option.OptionsBuilder;
 import com.cosium.openapi.annotation_processor.parser.PathParser;
 import com.cosium.openapi.annotation_processor.parser.PathParserFactory;
 import com.cosium.openapi.annotation_processor.parser.spring.SpringParserFactory;
-import com.cosium.openapi.annotation_processor.specification.DefaultSpecificationGenerator;
 import com.cosium.openapi.annotation_processor.specification.SpecificationGenerator;
+import com.cosium.openapi.annotation_processor.specification.SpecificationGeneratorFactory;
 import com.google.auto.service.AutoService;
 import io.swagger.models.Swagger;
 import org.slf4j.Logger;
@@ -23,10 +25,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -51,8 +50,9 @@ public class OpenAPIProcessor extends AbstractProcessor {
     private Messager messager;
 
     private List<ParserHolder> pathParsers;
-    private SpecificationGenerator specificationGenerator;
-    private CodeGenerator codeGenerator;
+    private FileManagerFactory fileManagerFactory;
+    private SpecificationGeneratorFactory specificationGeneratorFactory;
+    private CodeGeneratorFactory codeGeneratorFactory;
 
     public OpenAPIProcessor() {
         parserFactories.add(new SpringParserFactory());
@@ -82,17 +82,10 @@ public class OpenAPIProcessor extends AbstractProcessor {
                 .stream()
                 .map(ParserHolder::new)
                 .collect(Collectors.toList());
-        Filer filer = processingEnv.getFiler();
         IOptions options = optionsBuilder.build(processingEnv.getOptions());
-        this.specificationGenerator = new DefaultSpecificationGenerator(
-                options.specificationGenerator(),
-                new DefaultFileManager(options.baseGenerationPackage() + ".specification", filer)
-        );
-        this.codeGenerator = new DefaultCodeGenerator(
-                options.codeGenerator(),
-                serviceLoader,
-                new DefaultFileManager(options.baseGenerationPackage() + ".code", filer)
-        );
+        this.fileManagerFactory = new FileManagerFactory(processingEnv.getFiler(), options.baseGenerationPackage());
+        this.specificationGeneratorFactory = new SpecificationGeneratorFactory(options.specificationGenerator());
+        this.codeGeneratorFactory = new CodeGeneratorFactory(options.codeGenerator(), serviceLoader);
     }
 
     @Override
@@ -114,6 +107,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
     }
 
     private void doProcess(RoundEnvironment roundEnv, AtomicReference<Element> currentAnnotatedElement, boolean lastRound) {
+        Collection<Element> originatingElements = new HashSet<>();
         List<ParsedPath> parsedPaths = pathParsers
                 .stream()
                 .flatMap(parserHolder -> {
@@ -123,6 +117,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
                             .getElementsAnnotatedWith(annotation)
                             .stream()
                             .peek(currentAnnotatedElement::set)
+                            .peek(originatingElements::add)
                             .peek(o -> LOG.debug("Parsing paths from {}", o))
                             .map(pathParser::parse)
                             .flatMap(Collection::stream);
@@ -133,9 +128,13 @@ public class OpenAPIProcessor extends AbstractProcessor {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Generating specification from {} parsed paths", parsedPaths.size());
         }
+
+        FileManager specificationFileManager = fileManagerFactory.build("specification", originatingElements);
+        SpecificationGenerator specificationGenerator = specificationGeneratorFactory.build(specificationFileManager);
         Swagger specification = specificationGenerator.generate(parsedPaths, lastRound);
         if (lastRound) {
-            LOG.debug("Generating code");
+            FileManager codeGeneratorFileManager = fileManagerFactory.build("code", originatingElements);
+            CodeGenerator codeGenerator = codeGeneratorFactory.build(codeGeneratorFileManager);
             codeGenerator.generate(specification);
         }
     }

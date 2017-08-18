@@ -1,6 +1,6 @@
 package com.cosium.openapi.annotation_processor.code;
 
-import com.cosium.openapi.annotation_processor.FileManager;
+import com.cosium.openapi.annotation_processor.file.FileManager;
 import com.cosium.openapi.annotation_processor.loader.ServiceLoader;
 import io.swagger.codegen.ClientOptInput;
 import io.swagger.codegen.ClientOpts;
@@ -30,7 +30,7 @@ import static org.apache.commons.lang3.StringUtils.replace;
  *
  * @author Reda.Housni-Alaoui
  */
-public class DefaultCodeGenerator implements CodeGenerator {
+class DefaultCodeGenerator implements CodeGenerator {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultCodeGenerator.class);
 

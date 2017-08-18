@@ -1,4 +1,4 @@
-package com.cosium.openapi.annotation_processor;
+package com.cosium.openapi.annotation_processor.file;
 
 import javax.tools.FileObject;
 

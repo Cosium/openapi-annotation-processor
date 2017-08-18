@@ -1,6 +1,6 @@
 package com.cosium.openapi.annotation_processor.specification;
 
-import com.cosium.openapi.annotation_processor.FileManager;
+import com.cosium.openapi.annotation_processor.file.FileManager;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.swagger.models.Info;
@@ -24,18 +24,19 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class DefaultSpecificationGenerator implements SpecificationGenerator {
+class DefaultSpecificationGenerator implements SpecificationGenerator {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultSpecificationGenerator.class);
 
+    private final AtomicReference<Swagger> cache;
     private final ISpecificationGeneratorOptions options;
     private final FileManager fileManager;
 
-    private final AtomicReference<Swagger> cache = new AtomicReference<>();
-
-    public DefaultSpecificationGenerator(ISpecificationGeneratorOptions options, FileManager fileManager) {
+    public DefaultSpecificationGenerator(AtomicReference<Swagger> cache, ISpecificationGeneratorOptions options, FileManager fileManager) {
+        requireNonNull(cache);
         requireNonNull(options);
         requireNonNull(fileManager);
+        this.cache = cache;
         this.options = options;
         this.fileManager = fileManager;
     }
