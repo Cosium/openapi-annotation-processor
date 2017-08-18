@@ -1,5 +1,6 @@
 package com.cosium.openapi.annotation_processor.specification;
 
+import com.cosium.openapi.annotation_processor.RoundDescriptor;
 import com.cosium.openapi.annotation_processor.model.ParsedPath;
 import io.swagger.models.Swagger;
 
@@ -14,10 +15,11 @@ public interface SpecificationGenerator {
 
     /**
      * Generate specification for given paths
+     *
      * @param parsedPaths The parsed paths
-     * @param lastRound True if this is the last processor annotation round
+     * @param roundDescriptor The descriptor of the current round
      * @return The generated specification
      */
-    Swagger generate(List<ParsedPath> parsedPaths, boolean lastRound);
+    Swagger generate(List<ParsedPath> parsedPaths, RoundDescriptor roundDescriptor);
 
 }

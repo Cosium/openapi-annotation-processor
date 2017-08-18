@@ -26,6 +26,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenAPIProcessor.class);
 
+    private final AtomicInteger roundNumber = new AtomicInteger();
     private final List<PathParserFactory> parserFactories = new ArrayList<>();
     private final OptionsBuilder optionsBuilder = new OptionsBuilder();
     private final ServiceLoader serviceLoader = new DefaultServiceLoader();
@@ -98,7 +100,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
         }
         AtomicReference<Element> currentAnnotatedElement = new AtomicReference<>();
         try {
-            doProcess(roundEnv, currentAnnotatedElement, lastRound);
+            doProcess(roundEnv, currentAnnotatedElement, new RoundDescriptor(roundNumber.incrementAndGet(), lastRound));
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage(), currentAnnotatedElement.get());
@@ -106,7 +108,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
         return true;
     }
 
-    private void doProcess(RoundEnvironment roundEnv, AtomicReference<Element> currentAnnotatedElement, boolean lastRound) {
+    private void doProcess(RoundEnvironment roundEnv, AtomicReference<Element> currentAnnotatedElement, RoundDescriptor roundDescriptor) {
         Collection<Element> originatingElements = new HashSet<>();
         List<ParsedPath> parsedPaths = pathParsers
                 .stream()
@@ -131,8 +133,8 @@ public class OpenAPIProcessor extends AbstractProcessor {
 
         FileManager specificationFileManager = fileManagerFactory.build("specification", originatingElements);
         SpecificationGenerator specificationGenerator = specificationGeneratorFactory.build(specificationFileManager);
-        Swagger specification = specificationGenerator.generate(parsedPaths, lastRound);
-        if (lastRound) {
+        Swagger specification = specificationGenerator.generate(parsedPaths, roundDescriptor);
+        if (roundDescriptor.isLast()) {
             FileManager codeGeneratorFileManager = fileManagerFactory.build("code", originatingElements);
             CodeGenerator codeGenerator = codeGeneratorFactory.build(codeGeneratorFileManager);
             codeGenerator.generate(specification);

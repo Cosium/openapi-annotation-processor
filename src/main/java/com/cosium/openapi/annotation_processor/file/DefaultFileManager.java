@@ -34,6 +34,25 @@ class DefaultFileManager implements FileManager {
     }
 
     @Override
+    public FileObject getResource(CharSequence relativeName) {
+        return getResource(null, relativeName);
+    }
+
+    @Override
+    public FileObject getResource(CharSequence pkg, CharSequence relativeName) {
+        try {
+            String packageExtension = StringUtils.isNotBlank(pkg) ? "." + pkg : StringUtils.EMPTY;
+            return filer.getResource(
+                    StandardLocation.CLASS_OUTPUT,
+                    basePackage + packageExtension,
+                    relativeName
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public FileObject createResource(CharSequence relativeName) {
         return createResource(null, relativeName);
     }

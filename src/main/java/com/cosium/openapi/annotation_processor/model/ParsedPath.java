@@ -1,5 +1,7 @@
 package com.cosium.openapi.annotation_processor.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.models.Path;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -15,7 +17,8 @@ public class ParsedPath {
     private final String pathTemplate;
     private final Path path;
 
-    public ParsedPath(String pathTemplate, Path path) {
+    @JsonCreator
+    public ParsedPath(@JsonProperty("pathTemplate") String pathTemplate, @JsonProperty("path") Path path) {
         requireNonNull(pathTemplate);
         requireNonNull(path);
 
@@ -36,5 +39,20 @@ public class ParsedPath {
         return new ToStringBuilder(this)
                 .append("pathTemplate", pathTemplate)
                 .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ParsedPath that = (ParsedPath) o;
+
+        return pathTemplate.equals(that.pathTemplate);
+    }
+
+    @Override
+    public int hashCode() {
+        return pathTemplate.hashCode();
     }
 }

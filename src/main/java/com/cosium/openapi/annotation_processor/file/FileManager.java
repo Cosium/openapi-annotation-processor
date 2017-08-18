@@ -9,6 +9,10 @@ import javax.tools.FileObject;
  */
 public interface FileManager {
 
+    FileObject getResource(CharSequence relativeName);
+
+    FileObject getResource(CharSequence pkg, CharSequence relativeName);
+
     FileObject createResource(CharSequence relativeName);
 
     FileObject createResource(CharSequence pkg, CharSequence relativeName);

@@ -14,7 +14,7 @@ import static java.util.Objects.requireNonNull;
  */
 public class SpecificationGeneratorFactory {
 
-    private final AtomicReference<Swagger> cache = new AtomicReference<>();
+    private final AtomicReference<Swagger> runtimeCache = new AtomicReference<>();
     private final ISpecificationGeneratorOptions options;
 
     public SpecificationGeneratorFactory(ISpecificationGeneratorOptions options) {
@@ -24,10 +24,13 @@ public class SpecificationGeneratorFactory {
 
 
     public SpecificationGenerator build(FileManager fileManager) {
-        return new DefaultSpecificationGenerator(
-                cache,
-                options,
-                fileManager
+        return new WriterSpecificationGenerator(
+                new IncrementalSpecificationGenerator(
+                        new DefaultSpecificationGenerator(
+                                runtimeCache,
+                                options
+                        ), fileManager
+                ), fileManager
         );
     }
 
