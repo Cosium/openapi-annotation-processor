@@ -12,7 +12,7 @@ Add the maven dependency:
 <dependency>
     <groupId>com.cosium.openapi</groupId>
     <artifactId>openapi-annotation-processor</artifactId>
-    <version>1.9</version>
+    <version>1.11</version>
     <scope>provided</scope>
 </dependency>
 ```
