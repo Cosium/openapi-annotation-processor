@@ -8,7 +8,7 @@
 
     <groupId>com.cosium.openapi</groupId>
     <artifactId>openapi-annotation-processor</artifactId>
-    <version>1.10-SNAPSHOT</version>
+    <version>1.9-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
