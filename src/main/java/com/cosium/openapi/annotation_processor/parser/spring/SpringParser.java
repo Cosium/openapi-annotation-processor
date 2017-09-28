@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
@@ -107,7 +108,12 @@ class SpringParser implements PathParser {
     }
 
     private void addOperation(Path path, Operation operation, RequestMapping requestMapping) {
-        Stream.of(requestMapping.method()).forEach(requestMethod -> path.set(requestMethod.name().toLowerCase(), operation));
+        RequestMethod[] methods = requestMapping.method();
+        if (methods.length == 0) {
+            methods = new RequestMethod[]{RequestMethod.GET};
+        }
+        Stream.of(methods)
+                .forEach(requestMethod -> path.set(requestMethod.name().toLowerCase(), operation));
     }
 
     private Operation buildOperation(ExecutableElement executableElement) {
@@ -175,9 +181,9 @@ class SpringParser implements PathParser {
     private Set<String> getPathTemplates(RequestMapping requestMapping) {
         if (requestMapping.value().length > 0) {
             return new HashSet<>(Arrays.asList(requestMapping.value()));
-        } else if(requestMapping.path().length > 0){
+        } else if (requestMapping.path().length > 0) {
             return new HashSet<>(Arrays.asList(requestMapping.path()));
-        } else{
+        } else {
             return Collections.singleton(StringUtils.EMPTY);
         }
     }
