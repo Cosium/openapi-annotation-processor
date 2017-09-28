@@ -1,5 +1,3 @@
-[![Travis branch](https://img.shields.io/travis/Cosium/openapi-annotation-processor/master.svg)](https://travis-ci.org/Cosium/openapi-annotation-processor)
-[![Codecov branch](https://img.shields.io/codecov/c/github/Cosium/openapi-annotation-processor/master.svg)](https://codecov.io/gh/Cosium/openapi-annotation-processor)
 [![Maven Central Latest](https://img.shields.io/maven-central/v/com.cosium.openapi/openapi-annotation-processor.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.cosium.openapi%22%20AND%20a%3A%22openapi-annotation-processor%22)
 
 # OpenAPI Annotation Processor
@@ -16,7 +14,7 @@ Add the maven dependency:
 <dependency>
     <groupId>com.cosium.openapi</groupId>
     <artifactId>openapi-annotation-processor</artifactId>
-    <version>1.11</version>
+    <version>1.12</version>
     <scope>provided</scope>
 </dependency>
 ```
