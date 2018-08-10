@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <name>OpenAPI Annotation Processor</name>
-    <description>A java annotation processor performing various operations related to the OpenAPI initiative</description>
+    <description>A java annotation processor performing various operations related to the OpenAPI initiative
+    </description>
     <url>https://github.com/Cosium/openapi-annotation-processor</url>
 
     <groupId>com.cosium.openapi</groupId>
@@ -21,8 +23,8 @@
         <swagger-codegen.version>2.2.2</swagger-codegen.version>
         <commons.lang3.version>3.3.2</commons.lang3.version>
         <spring.version>4.3.0.RELEASE</spring.version>
-        <org.slf4j.version>1.7.7</org.slf4j.version>
-        <ch.qos.logback.version>1.1.7</ch.qos.logback.version>
+
+        <annotation-processor-logger.version>1.0</annotation-processor-logger.version>
     </properties>
 
     <dependencies>
@@ -36,6 +38,16 @@
             <groupId>io.swagger</groupId>
             <artifactId>swagger-codegen</artifactId>
             <version>${swagger-codegen.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-ext</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -51,15 +63,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${org.slf4j.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.cosium.logging</groupId>
+            <artifactId>annotation-processor-logger</artifactId>
+            <version>${annotation-processor-logger.version}</version>
         </dependency>
 
         <dependency>
@@ -80,13 +92,6 @@
             <groupId>com.google.testing.compile</groupId>
             <artifactId>compile-testing</artifactId>
             <version>${google.compile.testing.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${ch.qos.logback.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -208,6 +213,18 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.8</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <autoDropAfterRelease>true</autoDropAfterRelease>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -228,8 +245,8 @@
         <connection>scm:git:https://github.com/Cosium/openapi-annotation-processor</connection>
         <developerConnection>scm:git:https://github.com/Cosium/openapi-annotation-processor</developerConnection>
         <url>https://github.com/Cosium/openapi-annotation-processor</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <organization>
         <name>Cosium</name>
