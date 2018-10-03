@@ -1,5 +1,6 @@
 package com.cosium.openapi.annotation_processor;
 
+import com.cosium.logging.annotation_processor.AbstractLoggingProcessor;
 import com.cosium.openapi.annotation_processor.code.CodeGenerator;
 import com.cosium.openapi.annotation_processor.code.CodeGeneratorFactory;
 import com.cosium.openapi.annotation_processor.file.FileManager;
@@ -38,7 +39,7 @@ import static java.util.Objects.requireNonNull;
  * @author Reda.Housni-Alaoui
  */
 @AutoService(Processor.class)
-public class OpenAPIProcessor extends AbstractProcessor {
+public class OpenAPIProcessor extends AbstractLoggingProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenAPIProcessor.class);
 
@@ -91,7 +92,7 @@ public class OpenAPIProcessor extends AbstractProcessor {
     }
 
     @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    protected boolean doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         boolean lastRound = roundEnv.processingOver();
         if (lastRound) {
             LOG.debug("Processing last round");
