@@ -7,6 +7,7 @@ import javax.lang.model.element.Element;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -34,12 +35,12 @@ class DefaultFileManager implements FileManager {
     }
 
     @Override
-    public FileObject getResource(CharSequence relativeName) {
+    public FileObject getResource(CharSequence relativeName) throws NoSuchFileException {
         return getResource(null, relativeName);
     }
 
     @Override
-    public FileObject getResource(CharSequence pkg, CharSequence relativeName) {
+    public FileObject getResource(CharSequence pkg, CharSequence relativeName) throws NoSuchFileException {
         try {
             String packageExtension = StringUtils.isNotBlank(pkg) ? "." + pkg : StringUtils.EMPTY;
             return filer.getResource(
@@ -47,6 +48,8 @@ class DefaultFileManager implements FileManager {
                     basePackage + packageExtension,
                     relativeName
             );
+        } catch (NoSuchFileException e) {
+            throw e;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -7,6 +7,7 @@ import io.swagger.models.Swagger;
 import io.swagger.util.Json;
 
 import java.io.FileNotFoundException;
+import java.nio.file.NoSuchFileException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,7 +53,7 @@ class IncrementalSpecificationGenerator implements SpecificationGenerator {
     private List<ParsedPath> readFromFileCache() {
         try {
             return SwaggerUtils.read(Json.mapper(), fileManager.getResource(PARSED_PATHS_CACHE_FILENAME));
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | NoSuchFileException e) {
             return Collections.emptyList();
         }
     }
