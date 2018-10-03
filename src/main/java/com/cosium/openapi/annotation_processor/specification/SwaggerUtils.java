@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +29,10 @@ abstract class SwaggerUtils {
         }
     }
 
-    public static List<ParsedPath> read(ObjectMapper objectMapper, FileObject fileObject) throws FileNotFoundException {
+    public static List<ParsedPath> read(ObjectMapper objectMapper, FileObject fileObject) throws FileNotFoundException, NoSuchFileException {
         try (Reader reader = fileObject.openReader(false)) {
             return objectMapper.readValue(reader, objectMapper.getTypeFactory().constructCollectionType(List.class, ParsedPath.class));
-        } catch (FileNotFoundException e) {
+        } catch (NoSuchFileException | FileNotFoundException e) {
             throw e;
         } catch (IOException e) {
             throw new RuntimeException(e);
