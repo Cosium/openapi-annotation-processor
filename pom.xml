@@ -16,7 +16,7 @@
         <source.level>1.8</source.level>
         <immutables.version>2.3.9</immutables.version>
         <google.auto.version>1.0-rc3</google.auto.version>
-        <google.compile.testing.version>0.8</google.compile.testing.version>
+        <google.compile.testing.version>0.15</google.compile.testing.version>
 
         <swagger-core.version>1.5.16</swagger-core.version>
         <swagger-codegen.version>2.2.2</swagger-codegen.version>
