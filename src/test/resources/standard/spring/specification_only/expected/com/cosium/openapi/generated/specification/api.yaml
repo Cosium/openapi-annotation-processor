@@ -8,12 +8,16 @@ consumes:
 produces:
 - "application/json"
 paths:
-  /foo/hello:
+  /foo/hello/{name}:
     get:
       tags:
       - "foo"
       operationId: "hello"
-      parameters: []
+      parameters:
+      - name: "name"
+        in: "path"
+        required: false
+        type: "string"
       responses:
         200:
           schema:

@@ -174,7 +174,7 @@ class SpringParser implements PathParser {
                 .orElseGet(StringProperty::new);
         return new PathParameter()
                 .name(pathVariable.value())
-                .required(true)
+                .required(pathVariable.required())
                 .property(property);
     }
 
