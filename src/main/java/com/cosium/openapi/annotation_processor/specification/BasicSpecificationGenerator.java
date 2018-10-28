@@ -18,14 +18,14 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-class DefaultSpecificationGenerator implements SpecificationGenerator {
+class BasicSpecificationGenerator implements SpecificationGenerator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultSpecificationGenerator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BasicSpecificationGenerator.class);
 
     private final AtomicReference<Swagger> runtimeCache;
     private final ISpecificationGeneratorOptions options;
 
-    public DefaultSpecificationGenerator(AtomicReference<Swagger> runtimeCache, ISpecificationGeneratorOptions options) {
+    public BasicSpecificationGenerator(AtomicReference<Swagger> runtimeCache, ISpecificationGeneratorOptions options) {
         requireNonNull(runtimeCache);
         requireNonNull(options);
         this.runtimeCache = runtimeCache;

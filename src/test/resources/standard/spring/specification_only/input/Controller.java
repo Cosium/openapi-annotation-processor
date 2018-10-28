@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/foo")
 public class Controller {
 
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public Object yo() {
+		return "Yo";
+	}
+
 	@RequestMapping(value = "/hello", method = RequestMethod.GET)
 	public Object hello(@RequestParam(value = "name", required = false) String name) {
 		return "Hello " + name;

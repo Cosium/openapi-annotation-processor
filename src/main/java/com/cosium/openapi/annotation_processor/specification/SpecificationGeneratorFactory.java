@@ -26,7 +26,7 @@ public class SpecificationGeneratorFactory {
     public SpecificationGenerator build(FileManager fileManager) {
         return new WriterSpecificationGenerator(
                 new IncrementalSpecificationGenerator(
-                        new DefaultSpecificationGenerator(
+                        new BasicSpecificationGenerator(
                                 runtimeCache,
                                 options
                         ), fileManager

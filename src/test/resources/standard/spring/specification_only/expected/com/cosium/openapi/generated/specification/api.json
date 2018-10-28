@@ -25,6 +25,20 @@
           }
         }
       }
+    },
+    "/foo/" : {
+      "get" : {
+        "tags" : [ "foo" ],
+        "operationId" : "yo",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      }
     }
   }
 }
