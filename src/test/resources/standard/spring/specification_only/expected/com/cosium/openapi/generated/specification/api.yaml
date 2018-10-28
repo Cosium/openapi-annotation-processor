@@ -8,14 +8,14 @@ consumes:
 produces:
 - "application/json"
 paths:
-  /foo/hello/{name}:
+  /foo/hello:
     get:
       tags:
       - "foo"
       operationId: "hello"
       parameters:
       - name: "name"
-        in: "path"
+        in: "query"
         required: false
         type: "string"
       responses:
