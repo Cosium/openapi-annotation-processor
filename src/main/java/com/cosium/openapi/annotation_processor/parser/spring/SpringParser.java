@@ -6,7 +6,6 @@ import com.cosium.openapi.annotation_processor.parser.utils.AnnotationUtils;
 import com.cosium.openapi.annotation_processor.parser.utils.PropertyUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
 import io.swagger.models.Response;
@@ -182,7 +181,7 @@ class SpringParser implements PathParser {
 		BodyParameter bodyParameter = new BodyParameter();
 		bodyParameter.setName(variableElement.getSimpleName().toString());
 		bodyParameter.setRequired(true);
-		bodyParameter.setSchema(new ModelImpl().type(ModelImpl.OBJECT));
+		bodyParameter.setSchema(propertyUtils.buildModel(variableElement.asType()));
 		return bodyParameter;
 	}
 

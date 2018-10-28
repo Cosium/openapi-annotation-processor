@@ -1,6 +1,7 @@
 package standard.spring.empty.input;
 
 import io.swagger.annotations.Api;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,15 @@ public class Controller {
 	@RequestMapping(value = "/hello", method = RequestMethod.GET)
 	public Object hello(@RequestParam(value = "name", required = false) String name) {
 		return "Hello " + name;
+	}
+
+	private static class AlohaPayload{
+		public String name;
+	}
+
+	@RequestMapping(value = "/aloha", method = RequestMethod.POST)
+	public Object aloha(@RequestBody AlohaPayload payload){
+		return "Aloha " + payload.name;
 	}
 
 }

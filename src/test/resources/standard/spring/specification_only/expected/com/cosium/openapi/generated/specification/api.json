@@ -7,6 +7,32 @@
   "consumes" : [ "application/json" ],
   "produces" : [ "application/json" ],
   "paths" : {
+    "/foo/aloha" : {
+      "post" : {
+        "tags" : [ "foo" ],
+        "operationId" : "aloha",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "payload",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "name" : {
+                "type" : "string"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      }
+    },
     "/foo/hello" : {
       "get" : {
         "tags" : [ "foo" ],
