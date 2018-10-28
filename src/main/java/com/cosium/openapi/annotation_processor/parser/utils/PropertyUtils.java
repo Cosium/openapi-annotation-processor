@@ -67,8 +67,14 @@ public class PropertyUtils {
 	public Model buildModel(TypeMirror type) {
 		ModelImpl schema = new ModelImpl().type(ModelImpl.OBJECT);
 		getPublicFields(type)
-				.forEach(field -> schema.property(field.getSimpleName().toString(), toProperty(field.asType())));
+				.forEach(field -> addFieldToSchema(schema, field));
 		return schema;
+	}
+
+	private void addFieldToSchema(ModelImpl schema, Element field) {
+		Property property = toProperty(field.asType());
+		property.setRequired(true);
+		schema.property(field.getSimpleName().toString(), property);
 	}
 
 	private List<Element> getPublicFields(TypeMirror type) {
