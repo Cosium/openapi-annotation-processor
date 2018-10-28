@@ -164,6 +164,6 @@ public class OpenAPIProcessor extends AbstractLoggingProcessor {
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
-        return SourceVersion.latestSupported();
+        return SourceVersion.RELEASE_8;
     }
 }
