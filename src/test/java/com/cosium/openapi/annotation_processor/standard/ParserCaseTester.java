@@ -66,13 +66,13 @@ public class ParserCaseTester {
 	}
 
 	private void doTest() throws Exception {
-		LOG.info("Running test '{}' for parser '{}'", caseName, parserName);
+		System.out.println("Running test '" + caseName + "' for parser '" + parserName + "'");
 
 		List<JavaFileObject> inputs = subFileObjetcs(inputPath);
-		LOG.debug("Using inputs {}", inputs);
+		System.out.println("Using inputs " + inputs);
 
 		List<String> options = parseOptions();
-		LOG.debug("Using options {}", options);
+		System.out.println("Using options " + options);
 
 		CompileTester.SuccessfulCompilationClause clause = Truth.assert_()
 				.about(JavaSourcesSubjectFactory.javaSources())
@@ -83,7 +83,7 @@ public class ParserCaseTester {
 
 		resources(expectedPath)
 				.stream()
-				.peek(resource -> LOG.debug("Validating expectation on {}", resource))
+				.peek(resource -> System.out.println("Validating expectation on " + resource))
 				.forEach(resource -> clause.and()
 						.generatesFileNamed(LOCATION, resource.packageName, resource.relativeName)
 						.withStringContents(StandardCharsets.UTF_8, resource.stringSource));

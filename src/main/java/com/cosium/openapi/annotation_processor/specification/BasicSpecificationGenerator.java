@@ -37,7 +37,7 @@ class BasicSpecificationGenerator implements SpecificationGenerator {
         LOG.debug("Generating specification for {}", parsedPaths);
 
         Swagger swagger = runtimeCache.updateAndGet(spec -> ofNullable(spec).orElseGet(Swagger::new))
-                .info(new Info().title(options.title()))
+                .info(new Info().title(options.title()).version("1.0"))
                 .basePath(options.basePath())
                 .produces(options.produces())
                 .consumes(options.consumes());
