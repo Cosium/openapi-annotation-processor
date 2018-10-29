@@ -111,6 +111,7 @@ class SpringParser implements PathParser {
 		executableElements
 				.stream()
 				.peek(executableElement -> LOG.debug("Building path for {}", executableElement))
+				.filter(this::isNotHiddenOperation)
 				.forEach(executableElement -> {
 					Operation operation = buildOperation(executableElement);
 					RequestMapping requestMapping = executableElement.getAnnotation(RequestMapping.class);
@@ -118,6 +119,12 @@ class SpringParser implements PathParser {
 				});
 
 		return path;
+	}
+
+	private boolean isNotHiddenOperation(ExecutableElement executableElement) {
+		return !ofNullable(executableElement.getAnnotation(ApiOperation.class))
+				.map(ApiOperation::hidden)
+				.orElse(false);
 	}
 
 	private void addOperation(Path path, Operation operation, RequestMapping requestMapping) {

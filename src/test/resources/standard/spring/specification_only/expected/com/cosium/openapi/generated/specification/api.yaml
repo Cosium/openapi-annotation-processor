@@ -9,6 +9,7 @@ consumes:
 produces:
 - "application/json"
 paths:
+  /foo/hi: {}
   /foo/aloha:
     post:
       tags:
