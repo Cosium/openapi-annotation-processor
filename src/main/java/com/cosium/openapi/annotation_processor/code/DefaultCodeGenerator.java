@@ -24,6 +24,7 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.replace;
+import static org.apache.commons.lang3.StringUtils.stripStart;
 
 /**
  * Created on 12/07/17.
@@ -130,11 +131,11 @@ class DefaultCodeGenerator implements CodeGenerator {
 		if (StringUtils.isBlank(packageToPrefix)) {
 			return prefix;
 		}
-		String separator = packageToPrefix.startsWith(".") ? "" : ".";
+		String cleanedPackageToPrefix = stripStart(packageToPrefix, ".");
 		return ofNullable(prefix)
 				.filter(StringUtils::isNotBlank)
-				.map(s -> s + separator + packageToPrefix)
-				.orElse(packageToPrefix);
+				.map(s -> s + "." + cleanedPackageToPrefix)
+				.orElse(cleanedPackageToPrefix);
 	}
 
 }
