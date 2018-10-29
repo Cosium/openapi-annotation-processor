@@ -9,7 +9,7 @@
 
     <groupId>com.cosium.openapi</groupId>
     <artifactId>openapi-annotation-processor</artifactId>
-    <version>1.22-SNAPSHOT</version>
+    <version>1.22</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -245,7 +245,7 @@
         <connection>scm:git:https://github.com/Cosium/openapi-annotation-processor</connection>
         <developerConnection>scm:git:https://github.com/Cosium/openapi-annotation-processor</developerConnection>
         <url>https://github.com/Cosium/openapi-annotation-processor</url>
-        <tag>HEAD</tag>
+        <tag>openapi-annotation-processor-1.22</tag>
     </scm>
 
     <organization>
