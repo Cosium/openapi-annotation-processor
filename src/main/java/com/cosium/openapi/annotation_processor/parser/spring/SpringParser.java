@@ -159,6 +159,9 @@ class SpringParser implements PathParser {
 		okResponse.schema(returnProperty);
 		operation.response(200, okResponse);
 
+		ofNullable(executableElement.getAnnotation(Deprecated.class))
+				.ifPresent(deprecated -> operation.deprecated(true));
+
 		return operation;
 	}
 

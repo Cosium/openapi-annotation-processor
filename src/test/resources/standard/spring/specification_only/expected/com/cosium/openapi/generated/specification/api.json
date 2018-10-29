@@ -31,7 +31,8 @@
               "type" : "object"
             }
           }
-        }
+        },
+        "deprecated" : true
       }
     },
     "/foo/hello" : {

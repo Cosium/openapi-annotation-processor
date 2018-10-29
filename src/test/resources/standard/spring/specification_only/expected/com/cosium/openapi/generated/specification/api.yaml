@@ -28,6 +28,7 @@ paths:
         200:
           schema:
             type: "object"
+      deprecated: true
   /foo/hello:
     get:
       tags:

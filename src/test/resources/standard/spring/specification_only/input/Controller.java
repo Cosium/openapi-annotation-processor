@@ -24,6 +24,7 @@ public class Controller {
 		public String name;
 	}
 
+	@Deprecated
 	@RequestMapping(value = "/aloha", method = RequestMethod.POST)
 	public Object aloha(@RequestBody AlohaPayload payload){
 		return "Aloha " + payload.name;
