@@ -74,6 +74,10 @@ class SpringParser implements PathParser {
 		if (annotatedElement.getModifiers().contains(Modifier.ABSTRACT)) {
 			return emptyList();
 		}
+		Api apiAnnotation = annotatedElement.getAnnotation(Api.class);
+		if (apiAnnotation != null && apiAnnotation.hidden()) {
+			return emptyList();
+		}
 
 		Map<String, List<ExecutableElement>> methodsByPathTemplate = new HashMap<>();
 
