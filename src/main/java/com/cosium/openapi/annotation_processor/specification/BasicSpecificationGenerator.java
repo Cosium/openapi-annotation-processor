@@ -7,6 +7,7 @@ import io.swagger.models.Swagger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -20,29 +21,32 @@ import static java.util.Optional.ofNullable;
  */
 class BasicSpecificationGenerator implements SpecificationGenerator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BasicSpecificationGenerator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BasicSpecificationGenerator.class);
 
-    private final AtomicReference<Swagger> runtimeCache;
-    private final ISpecificationGeneratorOptions options;
+	private final AtomicReference<Swagger> runtimeCache;
+	private final ISpecificationGeneratorOptions options;
 
-    public BasicSpecificationGenerator(AtomicReference<Swagger> runtimeCache, ISpecificationGeneratorOptions options) {
-        requireNonNull(runtimeCache);
-        requireNonNull(options);
-        this.runtimeCache = runtimeCache;
-        this.options = options;
-    }
+	public BasicSpecificationGenerator(AtomicReference<Swagger> runtimeCache, ISpecificationGeneratorOptions options) {
+		requireNonNull(runtimeCache);
+		requireNonNull(options);
+		this.runtimeCache = runtimeCache;
+		this.options = options;
+	}
 
-    @Override
-    public Swagger generate(List<ParsedPath> parsedPaths, RoundDescriptor roundDescriptor) {
-        LOG.debug("Generating specification for {}", parsedPaths);
+	@Override
+	public Swagger generate(List<ParsedPath> parsedPaths, RoundDescriptor roundDescriptor) {
+		LOG.debug("Generating specification for {}", parsedPaths);
 
-        Swagger swagger = runtimeCache.updateAndGet(spec -> ofNullable(spec).orElseGet(Swagger::new))
-                .info(new Info().title(options.title()).version("1.0"))
-                .basePath(options.basePath())
-                .produces(options.produces())
-                .consumes(options.consumes());
-        SwaggerUtils.addParsedPaths(parsedPaths, swagger);
-        return swagger;
-    }
+		Swagger swagger = runtimeCache.updateAndGet(spec -> ofNullable(spec).orElseGet(Swagger::new))
+				.info(new Info().title(options.title()).version("1.0"))
+				.basePath(options.basePath())
+				.produces(options.produces())
+				.consumes(options.consumes());
+		if (swagger.getPaths() == null) {
+			swagger.paths(new LinkedHashMap<>());
+		}
+		SwaggerUtils.addParsedPaths(parsedPaths, swagger);
+		return swagger;
+	}
 
 }
