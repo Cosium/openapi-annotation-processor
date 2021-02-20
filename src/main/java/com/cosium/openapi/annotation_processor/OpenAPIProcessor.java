@@ -1,5 +1,7 @@
 package com.cosium.openapi.annotation_processor;
 
+import static java.util.Objects.requireNonNull;
+
 import com.cosium.logging.annotation_processor.AbstractLoggingProcessor;
 import com.cosium.openapi.annotation_processor.code.CodeGenerator;
 import com.cosium.openapi.annotation_processor.code.CodeGeneratorFactory;
@@ -17,22 +19,26 @@ import com.cosium.openapi.annotation_processor.specification.SpecificationGenera
 import com.cosium.openapi.annotation_processor.specification.SpecificationGeneratorFactory;
 import com.google.auto.service.AutoService;
 import io.swagger.models.Swagger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.processing.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.Processor;
+import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-
-import static java.util.Objects.requireNonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on 12/07/17.
@@ -103,9 +109,12 @@ public class OpenAPIProcessor extends AbstractLoggingProcessor {
         AtomicReference<Element> currentAnnotatedElement = new AtomicReference<>();
         try {
             doProcess(roundEnv, currentAnnotatedElement, new RoundDescriptor(roundNumber.incrementAndGet(), lastRound));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOG.error(e.getMessage(), e);
             messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage(), currentAnnotatedElement.get());
+            if(!(e instanceof Exception)){
+                throw e;
+            }
         }
         return true;
     }
